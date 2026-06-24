@@ -1,7 +1,7 @@
 export const STUDIO_NAME = "Wuloong Studio TOKYO"
 export const STUDIO_AREA = "三軒茶屋・世田谷"
-export const INSTAGRAM_URL = "https://www.instagram.com/wuloong_studio"
-export const LINE_URL = "https://line.me/ti/p/wuloong_studio"
+export const INSTAGRAM_URL = "https://www.instagram.com/wuloongstudio"
+export const LINE_URL = ""
 export const BOOKING_CALENDAR_URL = "https://calendar.google.com/calendar"
 
 export const SEO = {

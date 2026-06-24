@@ -64,18 +64,20 @@ export default function ContactPage() {
                 <p className="text-xs text-[#94a3b8]">DM歓迎 · 返信早め</p>
               </div>
             </a>
-            <a
-              href={LINE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-card rounded-2xl p-6 flex items-center gap-4 hover:shadow-md transition-all hover:-translate-y-0.5"
-            >
-              <div className="text-3xl">💬</div>
-              <div>
-                <p className="font-bold text-[#1a1a2e] text-sm">LINEで相談</p>
-                <p className="text-xs text-[#94a3b8]">気軽にメッセージ</p>
-              </div>
-            </a>
+            {LINE_URL && (
+              <a
+                href={LINE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card rounded-2xl p-6 flex items-center gap-4 hover:shadow-md transition-all hover:-translate-y-0.5"
+              >
+                <div className="text-3xl">💬</div>
+                <div>
+                  <p className="font-bold text-[#1a1a2e] text-sm">LINEで相談</p>
+                  <p className="text-xs text-[#94a3b8]">気軽にメッセージ</p>
+                </div>
+              </a>
+            )}
           </div>
 
           {/* Contact Form */}

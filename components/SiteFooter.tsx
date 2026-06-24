@@ -66,15 +66,17 @@ export default function SiteFooter() {
                 <span>📷</span>
                 <span>Instagramで相談する</span>
               </a>
-              <a
-                href={LINE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-white/60 hover:text-[#7eb8e8] transition-colors"
-              >
-                <span>💬</span>
-                <span>LINEで相談する</span>
-              </a>
+              {LINE_URL && (
+                <a
+                  href={LINE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-white/60 hover:text-[#7eb8e8] transition-colors"
+                >
+                  <span>💬</span>
+                  <span>LINEで相談する</span>
+                </a>
+              )}
               <Link
                 href="/booking"
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#7eb8e8] transition-colors"

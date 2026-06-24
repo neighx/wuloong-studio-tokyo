@@ -143,7 +143,7 @@ export default function HomePage() {
                   </p>
                   <div className="flex gap-3 mt-3">
                     <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#6b9fd4] hover:underline">Instagram DM →</a>
-                    <a href={LINE_URL} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#6b9fd4] hover:underline">LINE →</a>
+                    {LINE_URL && <a href={LINE_URL} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#6b9fd4] hover:underline">LINE →</a>}
                   </div>
                 </div>
               </div>
