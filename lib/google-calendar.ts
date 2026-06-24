@@ -114,7 +114,7 @@ function computeAvailableSlots(
   date: string,
   busyTimes: { start: string; end: string }[]
 ): TimeSlot[] {
-  const studioHours = [11, 13, 15, 17, 19, 21] // 開始時刻(JST)
+  const studioHours = [10, 13, 16, 19] // 開始時刻(JST) 10:00〜22:00
   return studioHours.map((hour) => {
     const start = `${date}T${String(hour).padStart(2, "0")}:00:00+09:00`
     const end   = `${date}T${String(hour + 3).padStart(2, "0")}:00:00+09:00`
@@ -125,10 +125,9 @@ function computeAvailableSlots(
 
 function generateMockSlots(date: string): TimeSlot[] {
   return [
-    { start: `${date}T11:00:00+09:00`, end: `${date}T14:00:00+09:00`, available: true },
-    { start: `${date}T14:00:00+09:00`, end: `${date}T17:00:00+09:00`, available: false },
-    { start: `${date}T17:00:00+09:00`, end: `${date}T20:00:00+09:00`, available: true },
+    { start: `${date}T10:00:00+09:00`, end: `${date}T13:00:00+09:00`, available: true },
+    { start: `${date}T13:00:00+09:00`, end: `${date}T16:00:00+09:00`, available: true },
+    { start: `${date}T16:00:00+09:00`, end: `${date}T19:00:00+09:00`, available: true },
     { start: `${date}T19:00:00+09:00`, end: `${date}T22:00:00+09:00`, available: true },
-    { start: `${date}T21:00:00+09:00`, end: `${date}T24:00:00+09:00`, available: false },
   ]
 }
