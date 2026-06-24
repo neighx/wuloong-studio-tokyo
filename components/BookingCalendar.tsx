@@ -1,20 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface TimeSlot {
   time: string
   available: boolean
 }
-
-const MOCK_SLOTS: TimeSlot[] = [
-  { time: "11:00", available: true },
-  { time: "14:00", available: false },
-  { time: "16:00", available: true },
-  { time: "18:00", available: true },
-  { time: "20:00", available: false },
-]
 
 interface BookingCalendarProps {
   onSelectDateTime?: (date: string, time: string) => void
@@ -27,7 +19,8 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
   const [currentMonth, setCurrentMonth] = useState(today)
   const [internalDate, setInternalDate] = useState(selectedDate ?? "")
   const [internalTime, setInternalTime] = useState(selectedTime ?? "")
-  const [slots] = useState<TimeSlot[]>(MOCK_SLOTS)
+  const [slots, setSlots] = useState<TimeSlot[]>([])
+  const [loading, setLoading] = useState(false)
 
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -38,11 +31,32 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
   const prevMonth = () => setCurrentMonth(new Date(year, month - 1))
   const nextMonth = () => setCurrentMonth(new Date(year, month + 1))
 
+  useEffect(() => {
+    if (!internalDate) return
+    setLoading(true)
+    setSlots([])
+    fetch(`/api/availability?date=${internalDate}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const parsed: TimeSlot[] = (data.slots ?? []).map((s: { start: string; available: boolean }) => {
+          const hour = new Date(s.start).toLocaleTimeString("ja-JP", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "Asia/Tokyo",
+            hour12: false,
+          })
+          return { time: hour, available: s.available }
+        })
+        setSlots(parsed)
+      })
+      .catch(() => setSlots([]))
+      .finally(() => setLoading(false))
+  }, [internalDate])
+
   const handleDateClick = (day: number) => {
     const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
     setInternalDate(date)
     setInternalTime("")
-    // In production, fetch slots for this date from /api/availability?date=...
   }
 
   const handleTimeClick = (time: string) => {
@@ -136,39 +150,43 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
             })}
             　の空き時間
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {slots.map((slot) => (
-              <button
-                key={slot.time}
-                onClick={() => slot.available && handleTimeClick(slot.time)}
-                disabled={!slot.available}
-                className={`
-                  py-3 px-4 rounded-2xl text-sm font-medium transition-all
-                  ${
-                    !slot.available
-                      ? "bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed"
-                      : internalTime === slot.time
-                      ? "text-white shadow-md"
-                      : "bg-[#f8f9ff] text-[#4a5568] hover:bg-[#6b9fd4]/10 border border-[#6b9fd4]/20"
+
+          {loading ? (
+            <p className="text-sm text-[#94a3b8] text-center py-4">読み込み中...</p>
+          ) : slots.length === 0 ? (
+            <p className="text-sm text-[#94a3b8] text-center py-4">空き枠がありません</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {slots.map((slot) => (
+                <button
+                  key={slot.time}
+                  onClick={() => slot.available && handleTimeClick(slot.time)}
+                  disabled={!slot.available}
+                  className={`
+                    py-3 px-4 rounded-2xl text-sm font-medium transition-all
+                    ${
+                      !slot.available
+                        ? "bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed"
+                        : internalTime === slot.time
+                        ? "text-white shadow-md"
+                        : "bg-[#f8f9ff] text-[#4a5568] hover:bg-[#6b9fd4]/10 border border-[#6b9fd4]/20"
+                    }
+                  `}
+                  style={
+                    internalTime === slot.time
+                      ? { background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" }
+                      : {}
                   }
-                `}
-                style={
-                  internalTime === slot.time
-                    ? { background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" }
-                    : {}
-                }
-              >
-                {slot.available ? (
-                  <span>{slot.time}〜</span>
-                ) : (
-                  <span className="line-through">{slot.time}</span>
-                )}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-[#94a3b8] mt-3">
-            ※ 表示されている時間は仮データです。実際の空き状況はInstagramまたはお問い合わせからご確認ください。
-          </p>
+                >
+                  {slot.available ? (
+                    <span>{slot.time}〜</span>
+                  ) : (
+                    <span className="line-through">{slot.time}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
