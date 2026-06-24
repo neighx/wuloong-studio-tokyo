@@ -1,12 +1,4 @@
-/**
- * Google Calendar integration
- *
- * Setup:
- *   1. npm install googleapis
- *   2. Google Cloud Console → Calendar API を有効化 → OAuth認証情報を作成
- *   3. node scripts/get-refresh-token.mjs → GOOGLE_REFRESH_TOKEN を取得
- *   4. .env.local に 4つの環境変数を設定
- */
+import { google } from "googleapis"
 
 export interface TimeSlot {
   start: string
@@ -34,8 +26,6 @@ function getCalendarClient() {
     return null // not configured yet → fall back to mock
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { google } = require("googleapis")
   const auth = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
   auth.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
   return google.calendar({ version: "v3", auth })
