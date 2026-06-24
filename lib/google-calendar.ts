@@ -34,13 +34,11 @@ function getCalendarClient() {
     return null // not configured yet → fall back to mock
   }
 
-  // Dynamic import so the build doesn't break without googleapis installed
-  // After `npm install googleapis`, this will work.
-  // const { google } = require("googleapis")
-  // const auth = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
-  // auth.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
-  // return google.calendar({ version: "v3", auth })
-  return null // TODO: uncomment after npm install googleapis
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { google } = require("googleapis")
+  const auth = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+  auth.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
+  return google.calendar({ version: "v3", auth })
 }
 
 // ── 空き時間取得 ──────────────────────────────────
@@ -51,28 +49,25 @@ export async function getAvailableSlots(date: string): Promise<TimeSlot[]> {
     return generateMockSlots(date) // dev / before API setup
   }
 
-  // TODO: uncomment after npm install googleapis
-  // const calendarId = process.env.GOOGLE_CALENDAR_ID!
-  // const dayStart = new Date(`${date}T00:00:00+09:00`).toISOString()
-  // const dayEnd   = new Date(`${date}T23:59:59+09:00`).toISOString()
-  //
-  // const res = await (calendar as any).events.list({
-  //   calendarId,
-  //   timeMin: dayStart,
-  //   timeMax: dayEnd,
-  //   singleEvents: true,
-  //   orderBy: "startTime",
-  // })
-  //
-  // const busyTimes: { start: string; end: string }[] =
-  //   (res.data.items ?? []).map((e: any) => ({
-  //     start: e.start?.dateTime ?? e.start?.date,
-  //     end:   e.end?.dateTime   ?? e.end?.date,
-  //   }))
-  //
-  // return computeAvailableSlots(date, busyTimes)
+  const calendarId = process.env.GOOGLE_CALENDAR_ID!
+  const dayStart = new Date(`${date}T00:00:00+09:00`).toISOString()
+  const dayEnd   = new Date(`${date}T23:59:59+09:00`).toISOString()
 
-  return generateMockSlots(date)
+  const res = await (calendar as any).events.list({
+    calendarId,
+    timeMin: dayStart,
+    timeMax: dayEnd,
+    singleEvents: true,
+    orderBy: "startTime",
+  })
+
+  const busyTimes: { start: string; end: string }[] =
+    (res.data.items ?? []).map((e: any) => ({
+      start: e.start?.dateTime ?? e.start?.date,
+      end:   e.end?.dateTime   ?? e.end?.date,
+    }))
+
+  return computeAvailableSlots(date, busyTimes)
 }
 
 // ── 予約イベント作成 ──────────────────────────────
@@ -84,23 +79,20 @@ export async function createBookingEvent(booking: BookingEvent): Promise<string>
     return "mock-event-id-" + Date.now()
   }
 
-  // TODO: uncomment after npm install googleapis
-  // const calendarId = process.env.GOOGLE_CALENDAR_ID!
-  // const event = await (calendar as any).events.insert({
-  //   calendarId,
-  //   sendUpdates: "all",   // お客様にも招待メールを送る
-  //   requestBody: {
-  //     summary: `[予約] ${booking.planName} — ${booking.customerName}`,
-  //     description: buildDescription(booking),
-  //     start: { dateTime: booking.startTime, timeZone: "Asia/Tokyo" },
-  //     end:   { dateTime: booking.endTime,   timeZone: "Asia/Tokyo" },
-  //     attendees: [{ email: booking.customerEmail }],
-  //     colorId: "9", // blueberry
-  //   },
-  // })
-  // return event.data.id ?? ""
-
-  return "mock-event-id-" + Date.now()
+  const calendarId = process.env.GOOGLE_CALENDAR_ID!
+  const event = await (calendar as any).events.insert({
+    calendarId,
+    sendUpdates: "all",
+    requestBody: {
+      summary: `[予約] ${booking.planName} — ${booking.customerName}`,
+      description: buildDescription(booking),
+      start: { dateTime: booking.startTime, timeZone: "Asia/Tokyo" },
+      end:   { dateTime: booking.endTime,   timeZone: "Asia/Tokyo" },
+      attendees: [{ email: booking.customerEmail }],
+      colorId: "9",
+    },
+  })
+  return event.data.id ?? ""
 }
 
 // ── ヘルパー ──────────────────────────────────────
