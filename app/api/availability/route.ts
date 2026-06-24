@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
     const slots = await getAvailableSlots(date)
     return NextResponse.json({ date, slots })
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error)
     console.error("[availability] Error fetching slots:", error)
-    return NextResponse.json({ error: "Failed to fetch availability" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to fetch availability", detail: msg }, { status: 500 })
   }
 }
