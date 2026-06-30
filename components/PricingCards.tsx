@@ -1,21 +1,30 @@
-import Link from "next/link"
-import { PLANS } from "@/lib/pricing"
+"use client"
 
-const steps: { id: string; step: string; icon: string; label: string }[] = [
-  { id: "first-time-2h",   step: "01", icon: "🎙️", label: "まずはここから" },
-  { id: "standard-3h",     step: "02", icon: "🎵", label: "リピーター向け" },
-  { id: "song-package",    step: "03", icon: "✨", label: "一番のおすすめ" },
-  { id: "monthly-support", step: "04", icon: "🚀", label: "本格的な活動に" },
+import Link from "next/link"
+import { PLANS, PlanId } from "@/lib/pricing"
+import { useLang } from "@/contexts/LanguageContext"
+import { t } from "@/lib/i18n"
+
+const STEP_IDS: { id: PlanId; step: string; icon: string }[] = [
+  { id: "first-time-2h", step: "01", icon: "🎙️" },
+  { id: "standard-3h", step: "02", icon: "🎵" },
+  { id: "song-package", step: "03", icon: "✨" },
+  { id: "monthly-support", step: "04", icon: "🚀" },
 ]
 
 const FEATURED_ID = "song-package"
 
 export default function PricingCards() {
+  const { lang } = useLang()
+  const T = t[lang]
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-stretch">
-      {steps.map(({ id, step, icon, label }) => {
+      {STEP_IDS.map(({ id, step, icon }, idx) => {
         const plan = PLANS.find((p) => p.id === id)!
+        const planT = T.plans[id]
         const featured = id === FEATURED_ID
+        const label = T.pricingCardsLabels[idx]
 
         return (
           <div
@@ -65,7 +74,7 @@ export default function PricingCards() {
                 className="text-lg font-bold mb-2"
                 style={{ color: featured ? "#ffffff" : "#1a1a2e" }}
               >
-                {plan.name}
+                {planT.name}
               </h3>
 
               {/* Description */}
@@ -73,7 +82,7 @@ export default function PricingCards() {
                 className="text-sm leading-relaxed mb-4"
                 style={{ color: featured ? "rgba(255,255,255,0.55)" : "#64748b", minHeight: "5.5rem" }}
               >
-                {plan.description}
+                {planT.description}
               </p>
 
               {/* Price */}
@@ -106,7 +115,7 @@ export default function PricingCards() {
             {/* Features */}
             <div className="px-5 flex-1">
               <ul className="space-y-2.5 mb-7">
-                {plan.features.slice(0, featured ? 6 : 4).map((feature) => (
+                {planT.features.slice(0, featured ? 6 : 4).map((feature) => (
                   <li key={feature} className="flex items-start gap-2.5 text-sm">
                     <span
                       className="mt-0.5 flex-shrink-0 font-bold"
@@ -135,7 +144,7 @@ export default function PricingCards() {
                     : "#e8afc4",
                 }}
               >
-                {plan.cta}
+                {planT.cta}
               </Link>
             </div>
           </div>

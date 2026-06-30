@@ -3,10 +3,16 @@
 import { useState, FormEvent } from "react"
 import { PLANS } from "@/lib/pricing"
 import BookingCalendar from "@/components/BookingCalendar"
+import { useLang } from "@/contexts/LanguageContext"
+import { t } from "@/lib/i18n"
 
 type FormState = "idle" | "submitting" | "success" | "error"
 
 export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
+  const { lang } = useLang()
+  const T = t[lang]
+  const TF = T.bookingForm
+
   const [selectedDate, setSelectedDate] = useState("")
   const [selectedTime, setSelectedTime] = useState("")
   const [formState, setFormState] = useState<FormState>("idle")
@@ -34,7 +40,7 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!selectedDate || !selectedTime) {
-      alert("日付と時間を選択してください")
+      alert(TF.alertMissingDateTime)
       return
     }
 
@@ -65,11 +71,9 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
     return (
       <div className="glass-card rounded-3xl p-10 text-center">
         <div className="text-5xl mb-4">🎉</div>
-        <h3 className="text-xl font-bold text-[#1a1a2e] mb-3">ご予約ありがとうございます</h3>
-        <p className="text-[#64748b] leading-relaxed">
-          内容を確認後、メールまたはInstagram DMでご連絡いたします。
-          <br />
-          しばらくお待ちください。
+        <h3 className="text-xl font-bold text-[#1a1a2e] mb-3">{TF.successTitle}</h3>
+        <p className="text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>
+          {TF.successBody}
         </p>
       </div>
     )
@@ -79,10 +83,11 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Plan Selection */}
       <div className="glass-card rounded-3xl p-6">
-        <label className="block text-sm font-semibold text-[#1a1a2e] mb-4">プランを選ぶ</label>
+        <label className="block text-sm font-semibold text-[#1a1a2e] mb-4">{TF.selectPlan}</label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {PLANS.map((plan) => {
             const selected = form.planId === plan.id
+            const planT = T.plans[plan.id]
             return (
               <label
                 key={plan.id}
@@ -102,10 +107,10 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
                 />
                 {plan.tag && (
                   <span className="text-[9px] text-white px-1.5 py-0.5 rounded-full bg-[#9b8ec4] self-start mb-2">
-                    {plan.tag}
+                    {planT.tag}
                   </span>
                 )}
-                <p className="text-xs font-bold text-[#1a1a2e] leading-snug mb-2">{plan.name}</p>
+                <p className="text-xs font-bold text-[#1a1a2e] leading-snug mb-2">{planT.name}</p>
                 <p className="text-sm font-black mt-auto" style={{ color: selected ? "#6b9fd4" : "#94a3b8" }}>
                   {plan.price}
                   {plan.priceNote && <span className="text-[10px] font-normal block">{plan.priceNote}</span>}
@@ -118,7 +123,7 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
 
       {/* Calendar */}
       <div>
-        <p className="text-sm font-semibold text-[#1a1a2e] mb-3">希望日・時間を選ぶ</p>
+        <p className="text-sm font-semibold text-[#1a1a2e] mb-3">{TF.selectDateTime}</p>
         <BookingCalendar
           selectedDate={selectedDate}
           selectedTime={selectedTime}
@@ -131,47 +136,47 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
 
       {/* Customer Info */}
       <div className="glass-card rounded-3xl p-6 space-y-4">
-        <p className="text-sm font-semibold text-[#1a1a2e]">お客様情報</p>
+        <p className="text-sm font-semibold text-[#1a1a2e]">{TF.customerInfo}</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-[#64748b] mb-1 font-medium">お名前 *</label>
+            <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.name}</label>
             <input
               type="text"
               name="name"
               required
               value={form.name}
               onChange={handleChange}
-              placeholder="山田 花子"
+              placeholder={TF.namePlaceholder}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white/80 text-sm focus:outline-none focus:border-[#6b9fd4] focus:ring-2 focus:ring-[#6b9fd4]/20 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs text-[#64748b] mb-1 font-medium">メールアドレス *</label>
+            <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.email}</label>
             <input
               type="email"
               name="email"
               required
               value={form.email}
               onChange={handleChange}
-              placeholder="your@email.com"
+              placeholder={TF.emailPlaceholder}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white/80 text-sm focus:outline-none focus:border-[#6b9fd4] focus:ring-2 focus:ring-[#6b9fd4]/20 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs text-[#64748b] mb-1 font-medium">電話番号 *</label>
+            <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.phone}</label>
             <input
               type="tel"
               name="phone"
               required
               value={form.phone}
               onChange={handleChange}
-              placeholder="090-0000-0000"
+              placeholder={TF.phonePlaceholder}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white/80 text-sm focus:outline-none focus:border-[#6b9fd4] focus:ring-2 focus:ring-[#6b9fd4]/20 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs text-[#64748b] mb-1 font-medium">Instagram ID（任意）</label>
+            <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.instagram}</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] text-sm">@</span>
               <input
@@ -179,7 +184,7 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
                 name="instagram"
                 value={form.instagram}
                 onChange={handleChange}
-                placeholder="your_handle"
+                placeholder={TF.instagramPlaceholder}
                 className="w-full pl-8 pr-4 py-3 rounded-xl border border-[#e2e8f0] bg-white/80 text-sm focus:outline-none focus:border-[#6b9fd4] focus:ring-2 focus:ring-[#6b9fd4]/20 transition-all"
               />
             </div>
@@ -187,13 +192,13 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
         </div>
 
         <div>
-          <label className="block text-xs text-[#64748b] mb-1 font-medium">内容・相談したいこと</label>
+          <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.message}</label>
           <textarea
             name="message"
             value={form.message}
             onChange={handleChange}
             rows={4}
-            placeholder="録音したい曲のジャンル、参考アーティスト、ご不明な点など、お気軽にお書きください。"
+            placeholder={TF.messagePlaceholder}
             className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white/80 text-sm focus:outline-none focus:border-[#6b9fd4] focus:ring-2 focus:ring-[#6b9fd4]/20 transition-all resize-none"
           />
         </div>
@@ -206,7 +211,7 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
             onChange={handleChange}
             className="w-4 h-4 accent-[#6b9fd4]"
           />
-          <span className="text-sm text-[#4a5568]">Wuloong Studio TOKYOへの初回利用です</span>
+          <span className="text-sm text-[#4a5568]">{TF.firstTimeCheckbox}</span>
         </label>
       </div>
 
@@ -216,12 +221,12 @@ export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
         disabled={formState === "submitting"}
         className="w-full btn-primary py-4 text-base font-bold disabled:opacity-60"
       >
-        {formState === "submitting" ? "送信中..." : "予約を申し込む"}
+        {formState === "submitting" ? TF.submitting : TF.submit}
       </button>
 
       {formState === "error" && (
         <p className="text-center text-red-500 text-sm">
-          エラーが発生しました。Instagramまたはメールからご連絡ください。
+          {TF.errorMsg}
         </p>
       )}
     </form>
