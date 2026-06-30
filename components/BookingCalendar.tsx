@@ -75,23 +75,26 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
   const monthLabel = currentMonth.toLocaleDateString("ja-JP", { year: "numeric", month: "long" })
   const dayLabels = ["日", "月", "火", "水", "木", "金", "土"]
 
+  const availableSlots = slots.filter((s) => s.available)
+  const bookedSlots = slots.filter((s) => !s.available)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Calendar */}
-      <div className="glass-card rounded-3xl p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="glass-card rounded-3xl p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-5">
           <button
             onClick={prevMonth}
-            className="p-2 rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b]"
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b]"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={20} />
           </button>
           <span className="font-bold text-[#1a1a2e]">{monthLabel}</span>
           <button
             onClick={nextMonth}
-            className="p-2 rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b]"
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b]"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={20} />
           </button>
         </div>
 
@@ -141,7 +144,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
 
       {/* Time slots */}
       {internalDate && (
-        <div className="glass-card rounded-3xl p-6">
+        <div className="glass-card rounded-3xl p-5 sm:p-6">
           <p className="text-sm font-semibold text-[#1a1a2e] mb-4">
             {new Date(internalDate + "T12:00:00").toLocaleDateString("ja-JP", {
               month: "long",
@@ -152,40 +155,60 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
           </p>
 
           {loading ? (
-            <p className="text-sm text-[#94a3b8] text-center py-4">読み込み中...</p>
+            <p className="text-sm text-[#94a3b8] text-center py-6">読み込み中...</p>
           ) : slots.length === 0 ? (
-            <p className="text-sm text-[#94a3b8] text-center py-4">空き枠がありません</p>
+            <p className="text-sm text-[#94a3b8] text-center py-6">空き枠がありません</p>
+          ) : availableSlots.length === 0 ? (
+            <p className="text-sm text-[#94a3b8] text-center py-6">
+              この日はすべて予約済みです
+            </p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {slots.map((slot) => (
-                <button
-                  key={slot.time}
-                  onClick={() => slot.available && handleTimeClick(slot.time)}
-                  disabled={!slot.available}
-                  className={`
-                    py-3 px-4 rounded-2xl text-sm font-medium transition-all
-                    ${
-                      !slot.available
-                        ? "bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed"
-                        : internalTime === slot.time
-                        ? "text-white shadow-md"
-                        : "bg-[#f8f9ff] text-[#4a5568] hover:bg-[#6b9fd4]/10 border border-[#6b9fd4]/20"
-                    }
-                  `}
-                  style={
-                    internalTime === slot.time
-                      ? { background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" }
-                      : {}
-                  }
-                >
-                  {slot.available ? (
-                    <span>{slot.time}〜</span>
-                  ) : (
-                    <span className="line-through">{slot.time}</span>
-                  )}
-                </button>
-              ))}
-            </div>
+            <>
+              {/* Available slots — single column on mobile for easy tapping */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                {availableSlots.map((slot) => {
+                  const selected = internalTime === slot.time
+                  return (
+                    <button
+                      key={slot.time}
+                      onClick={() => handleTimeClick(slot.time)}
+                      className={`
+                        w-full flex items-center justify-between px-5 rounded-2xl font-semibold transition-all
+                        min-h-[60px] text-base active:scale-[0.97]
+                        ${selected
+                          ? "text-white shadow-md"
+                          : "bg-[#f0f5ff] text-[#1a1a2e] hover:bg-[#6b9fd4]/15 border border-[#6b9fd4]/25"
+                        }
+                      `}
+                      style={selected ? { background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" } : {}}
+                    >
+                      <span>{slot.time}〜</span>
+                      {selected
+                        ? <span className="text-white/80 text-sm">✓ 選択中</span>
+                        : <span className="text-[#6b9fd4] text-sm">空き</span>
+                      }
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Booked slots — compact, secondary */}
+              {bookedSlots.length > 0 && (
+                <div>
+                  <p className="text-xs text-[#94a3b8] mb-2">予約済み</p>
+                  <div className="flex flex-wrap gap-2">
+                    {bookedSlots.map((slot) => (
+                      <span
+                        key={slot.time}
+                        className="px-3 py-1.5 rounded-xl text-xs text-[#cbd5e1] bg-[#f1f5f9] line-through"
+                      >
+                        {slot.time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
