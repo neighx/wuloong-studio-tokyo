@@ -57,7 +57,7 @@ export const PLANS: Plan[] = [
     priceNote: "内容により変動",
     description: "録音だけで終わらせず、リリースできる1曲へ。RECからMIXまでまとめてサポートします。",
     features: [
-      "レコーディング",
+      "3時間レコーディング",
       "ボーカル編集",
       "MIXMASTER",
     ],
@@ -74,7 +74,7 @@ export const PLANS: Plan[] = [
     priceNote: "30日",
     description: "曲を作るだけで終わらせず、リリース・発信・次の動きまで一緒に進める30日サポートです。",
     features: [
-      "月2回レコーディング込",
+      "月2回３時間レコーディング込",
       "MIXMASTERING",
       "リリース計画サポート",
       "SNS・活動相談",
