@@ -23,7 +23,7 @@
   --color-studio-pink: #e8afc4;
   --color-studio-neon: #7eb8e8;
   --color-studio-silver: #c8cdd8;
-  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  --font-sans: var(--font-cormorant), var(--font-noto-serif), "Hiragino Mincho ProN", serif;
 }
 
 * {
@@ -37,7 +37,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", -apple-system, sans-serif;
+  font-family: var(--font-cormorant), var(--font-noto-serif), "Hiragino Mincho ProN", serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
 }

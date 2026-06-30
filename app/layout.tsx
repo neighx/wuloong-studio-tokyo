@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Dancing_Script } from "next/font/google"
+import { Dancing_Script, Cormorant_Garamond, Noto_Serif_JP } from "next/font/google"
 import "./globals.css"
 import SiteHeader from "@/components/SiteHeader"
 import SiteFooter from "@/components/SiteFooter"
@@ -10,6 +10,21 @@ const dancingScript = Dancing_Script({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-dancing",
+  display: "swap",
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+})
+
+const notoSerifJP = Noto_Serif_JP({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-noto-serif",
   display: "swap",
 })
 
@@ -63,7 +78,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={dancingScript.variable}>
+    <html lang="ja" className={`${dancingScript.variable} ${cormorant.variable} ${notoSerifJP.variable}`}>
       <head>
         <script
           type="application/ld+json"
