@@ -5,43 +5,77 @@ import Link from "next/link"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
 import { INSTAGRAM_URL } from "@/lib/constants"
+import { useLang } from "@/contexts/LanguageContext"
+import { t } from "@/lib/i18n"
 
-const navLinks = [
-  { href: "/first-time",      label: "はじめての方へ" },
-  { href: "/pricing",         label: "料金" },
-  { href: "/song-package",    label: "1曲完成パック" },
-  { href: "/monthly-support", label: "30日サポート" },
-  { href: "/booking",         label: "予約" },
-  { href: "/access",          label: "アクセス" },
-  { href: "/faq",             label: "FAQ" },
+const NAV_HREFS = [
+  "/first-time",
+  "/pricing",
+  "/song-package",
+  "/monthly-support",
+  "/booking",
+  "/access",
+  "/faq",
 ]
 
-// ロゴセクションの高さ（スクロール検知の閾値）
 const SCROLL_THRESHOLD = 130
 
 export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { lang, setLang } = useLang()
+  const T = t[lang]
+
+  const navLinks = NAV_HREFS.map((href, i) => ({
+    href,
+    label: [
+      T.nav.firstTime,
+      T.nav.pricing,
+      T.nav.songPackage,
+      T.nav.support,
+      T.nav.booking,
+      T.nav.access,
+      T.nav.faq,
+    ][i],
+  }))
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > SCROLL_THRESHOLD)
-    handler() // 初期値セット
+    handler()
     window.addEventListener("scroll", handler, { passive: true })
     return () => window.removeEventListener("scroll", handler)
   }, [])
 
-  // モバイルメニューを開いた時にスクロール禁止
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : ""
     return () => { document.body.style.overflow = "" }
   }, [mobileOpen])
 
+  const LangToggle = ({ className = "" }: { className?: string }) => (
+    <button
+      onClick={() => setLang(lang === "ja" ? "en" : "ja")}
+      className={className}
+      style={{
+        fontSize: "10px",
+        fontWeight: 700,
+        letterSpacing: "0.18em",
+        color: "#94a3b8",
+        padding: "5px 10px",
+        borderRadius: "9999px",
+        border: "1px solid rgba(148,163,184,0.35)",
+        transition: "all 0.2s",
+        background: "transparent",
+        cursor: "pointer",
+      }}
+      aria-label="Toggle language"
+    >
+      {lang === "ja" ? "EN" : "JP"}
+    </button>
+  )
+
   return (
     <>
-      {/* ══════════════════════════════════════════════
-          PC: 大きいヘッダー（スクロール前のみ表示）
-          ロゴ + ナビ、上品な余白
-          ══════════════════════════════════════════════ */}
+      {/* ══ PC: Large header (before scroll) ══ */}
       <header
         className={`
           fixed top-0 left-0 right-0 z-50 bg-white
@@ -50,12 +84,16 @@ export default function SiteHeader() {
           ${scrolled ? "-translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}
         `}
       >
-        {/* ロゴエリア：中央・上下余白たっぷり */}
         <div
           className="flex items-center justify-center relative"
           style={{ height: "82px" }}
         >
-          {/* 右端: Instagram + 予約 */}
+          {/* Left: lang toggle */}
+          <div className="absolute left-10 top-1/2 -translate-y-1/2">
+            <LangToggle />
+          </div>
+
+          {/* Right: Instagram + Book */}
           <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-6">
             <a
               href={INSTAGRAM_URL}
@@ -79,11 +117,11 @@ export default function SiteHeader() {
                 borderRadius: "9999px",
               }}
             >
-              予約する
+              {T.header.book}
             </Link>
           </div>
 
-          {/* ロゴ中央 */}
+          {/* Logo center */}
           <Link href="/" className="block">
             <Image
               src="/images/logo/logo.png"
@@ -100,27 +138,16 @@ export default function SiteHeader() {
           </Link>
         </div>
 
-        {/* ナビゲーション：中央・文字大きめ・letter-spacing広め */}
         <nav
           className="flex items-center justify-center"
-          style={{
-            gap: "3.2rem",
-            paddingTop: "2px",
-            paddingBottom: "18px",
-            borderBottom: "1px solid #e8e8e8",
-          }}
+          style={{ gap: "3.2rem", paddingTop: "2px", paddingBottom: "18px", borderBottom: "1px solid #e8e8e8" }}
         >
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="text-[#5a6472] hover:text-[#1a2340] transition-colors duration-200"
-              style={{
-                fontSize: "12px",
-                fontWeight: 500,
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-              }}
+              style={{ fontSize: "12px", fontWeight: 500, letterSpacing: "0.28em", textTransform: "uppercase" }}
             >
               {link.label}
             </Link>
@@ -128,10 +155,7 @@ export default function SiteHeader() {
         </nav>
       </header>
 
-      {/* ══════════════════════════════════════════════
-          PC: Stickyコンパクトナビ（スクロール後）
-          glassmorphism + blur
-          ══════════════════════════════════════════════ */}
+      {/* ══ PC: Sticky compact nav (after scroll) ══ */}
       <div
         className={`
           fixed top-0 left-0 right-0 z-50
@@ -147,7 +171,7 @@ export default function SiteHeader() {
         }}
       >
         <nav
-          className="flex items-center justify-center"
+          className="flex items-center justify-center relative"
           style={{ gap: "3.2rem", padding: "15px 0" }}
         >
           {navLinks.map((link) => (
@@ -155,28 +179,20 @@ export default function SiteHeader() {
               key={link.href}
               href={link.href}
               className="text-[#5a6472] hover:text-[#1a2340] transition-colors duration-200"
-              style={{
-                fontSize: "12px",
-                fontWeight: 500,
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-              }}
+              style={{ fontSize: "12px", fontWeight: 500, letterSpacing: "0.28em", textTransform: "uppercase" }}
             >
               {link.label}
             </Link>
           ))}
+          <div className="absolute right-10">
+            <LangToggle />
+          </div>
         </nav>
       </div>
 
-      {/* ══════════════════════════════════════════════
-          MOBILE: ヘッダーバー
-          常に表示・コンパクト
-          ══════════════════════════════════════════════ */}
+      {/* ══ Mobile: Header bar ══ */}
       <div
-        className={`
-          fixed top-0 left-0 right-0 z-50 lg:hidden
-          transition-all duration-200
-        `}
+        className="fixed top-0 left-0 right-0 z-50 lg:hidden transition-all duration-200"
         style={{
           background: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,1)",
           backdropFilter: scrolled ? "blur(20px)" : "none",
@@ -185,16 +201,16 @@ export default function SiteHeader() {
         }}
       >
         <div className="relative flex items-center justify-between px-5 h-[60px]">
-          {/* ハンバーガー (左) */}
+          {/* Hamburger (left) */}
           <button
             className="p-2 text-[#1a2340] relative z-10"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "メニューを閉じる" : "メニューを開く"}
+            aria-label={mobileOpen ? T.header.menuClose : T.header.menuOpen}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          {/* ロゴ中央 */}
+          {/* Logo center */}
           <Link href="/" className="absolute left-1/2 -translate-x-1/2">
             <Image
               src="/images/logo/logo.png"
@@ -206,7 +222,7 @@ export default function SiteHeader() {
             />
           </Link>
 
-          {/* 予約ボタン (右) */}
+          {/* Book button (right) */}
           <Link
             href="/booking"
             className="relative z-10 text-white"
@@ -219,14 +235,12 @@ export default function SiteHeader() {
               borderRadius: "9999px",
             }}
           >
-            予約
+            {T.header.bookShort}
           </Link>
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════
-          MOBILE: フルスクリーンメニュードロワー
-          ══════════════════════════════════════════════ */}
+      {/* ══ Mobile: Full-screen drawer ══ */}
       <div
         className={`
           fixed inset-0 z-40 bg-white lg:hidden
@@ -257,7 +271,7 @@ export default function SiteHeader() {
               className="text-center py-4 rounded-full text-sm font-bold text-white"
               style={{ background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)", letterSpacing: "0.1em" }}
             >
-              予約する
+              {T.header.book}
             </Link>
             <a
               href={INSTAGRAM_URL}
@@ -266,16 +280,20 @@ export default function SiteHeader() {
               className="text-center py-3.5 rounded-full text-sm font-semibold text-[#6b9fd4]"
               style={{ border: "1px solid rgba(107,159,212,0.35)", letterSpacing: "0.08em" }}
             >
-              Instagramで相談する
+              {T.header.contactInstagram}
             </a>
           </div>
 
-          {/* スタジオ情報 */}
-          <div className="mt-10 pt-8 border-t border-[#f2f2f2]">
+          {/* Lang toggle in drawer */}
+          <div className="mt-8 flex justify-center">
+            <LangToggle />
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-[#f2f2f2]">
             <p style={{ fontSize: "10px", letterSpacing: "0.35em", color: "#94a3b8", textTransform: "uppercase" }}>
               SANGENJAYA · SETAGAYA · TOKYO
             </p>
-            <p className="text-xs text-[#94a3b8] mt-2">完全予約制プライベートスタジオ</p>
+            <p className="text-xs text-[#94a3b8] mt-2">{T.header.studioInfo}</p>
           </div>
         </div>
       </div>

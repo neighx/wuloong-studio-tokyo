@@ -1,22 +1,24 @@
+"use client"
+
 import Image from "next/image"
+import { useLang } from "@/contexts/LanguageContext"
+import { t } from "@/lib/i18n"
 
 export default function Hero() {
+  const { lang } = useLang()
+  const T = t[lang].hero
+
   return (
     <>
-      {/* ── スタジオ写真 ─────────────────────────────────────────────── */}
+      {/* Studio photo */}
       <div className="mt-[60px] lg:mt-[120px] px-3 sm:px-5 lg:px-10">
         <div
           className="relative w-full overflow-hidden"
-          style={{
-            height: "72vh",
-            maxHeight: 860,
-            minHeight: 380,
-            borderRadius: "4px",
-          }}
+          style={{ height: "72vh", maxHeight: 860, minHeight: 380, borderRadius: "4px" }}
         >
           <Image
             src="/images/studio/studio-main.jpg"
-            alt="Wuloong Studio TOKYO — スタジオ"
+            alt="Wuloong Studio TOKYO"
             fill
             priority
             className="object-cover object-center"
@@ -25,93 +27,52 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── ホワイト エディトリアルセクション (Ron Herman スタイル) ──── */}
+      {/* White editorial section */}
       <div className="bg-white text-center" style={{ padding: "6rem 2rem 3rem" }}>
-
-        {/* 日本語タグライン */}
         <p
           className="text-[#1a2340]"
-          style={{
-            fontSize: "clamp(1.15rem, 2.8vw, 2rem)",
-            fontWeight: 300,
-            letterSpacing: "0.12em",
-            lineHeight: 2.1,
-            marginBottom: "3rem",
-          }}
+          style={{ fontSize: "clamp(1.15rem, 2.8vw, 2rem)", fontWeight: 300, letterSpacing: "0.12em", lineHeight: 2.1, marginBottom: "3rem" }}
         >
-          その一瞬を、永遠の記憶に。
+          {T.tagline}
         </p>
 
-        {/* What We Do テキスト — Ron Herman 中央エディトリアルスタイル */}
         <div style={{ maxWidth: "600px", margin: "0 auto 4rem" }}>
           <p
             className="text-[#1a2340]"
-            style={{
-              fontSize: "clamp(1rem, 1.8vw, 1.3rem)",
-              fontWeight: 500,
-              letterSpacing: "0.05em",
-              lineHeight: 2.0,
-              marginBottom: "1.8rem",
-              fontStyle: "italic",
-            }}
+            style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontWeight: 500, letterSpacing: "0.05em", lineHeight: 2.0, marginBottom: "1.8rem", fontStyle: "italic" }}
           >
-            &ldquo;3時間でアイデアを、リリースできる1曲に変える場所。&rdquo;
+            &ldquo;{T.quote}&rdquo;
           </p>
           <p
             className="text-[#64748b]"
-            style={{
-              fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)",
-              lineHeight: 2.1,
-              letterSpacing: "0.02em",
-              marginBottom: "1.2rem",
-            }}
+            style={{ fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)", lineHeight: 2.1, letterSpacing: "0.02em", marginBottom: "1.2rem" }}
           >
-            宅録の音質に限界を感じていたり、スタジオに入ることへのハードルを感じていても大丈夫。
-            録音からMIX・マスタリングまで、1曲を仕上げる全工程をサポートします。
+            {T.body1}
           </p>
           <p
             className="text-[#64748b]"
-            style={{
-              fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)",
-              lineHeight: 2.1,
-              letterSpacing: "0.02em",
-            }}
+            style={{ fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)", lineHeight: 2.1, letterSpacing: "0.02em" }}
           >
-            初めての方でも、プロのアーティストでも。あなたのやりたいことに合わせて対応します。
+            {T.body2}
           </p>
         </div>
 
-        {/* VOCAL IS BEAUTIFUL — Ron Herman「Style of Life California」スタイル */}
         <h1
           className="text-[#1a2340] font-black uppercase leading-none"
-          style={{
-            fontSize: "clamp(1.5rem, 3.2vw, 2.6rem)",
-            letterSpacing: "0.1em",
-            marginBottom: "2.5rem",
-          }}
+          style={{ fontSize: "clamp(1.5rem, 3.2vw, 2.6rem)", letterSpacing: "0.1em", marginBottom: "2.5rem" }}
         >
           VOCAL IS BEAUTIFUL
         </h1>
 
-        {/* Wuloong Studio 署名ロゴ */}
-        <div
-          className="flex justify-center"
-          style={{ marginBottom: "3.5rem" }}
-        >
+        <div className="flex justify-center" style={{ marginBottom: "3.5rem" }}>
           <Image
             src="/images/logo/logo.png"
             alt="Wuloong Studio"
             width={373}
             height={160}
-            style={{
-              height: "clamp(28px, 3.2vw, 40px)",
-              width: "auto",
-              filter: "brightness(0)",
-              opacity: 0.6,
-            }}
+            style={{ height: "clamp(28px, 3.2vw, 40px)", width: "auto", filter: "brightness(0)", opacity: 0.6 }}
           />
         </div>
-
       </div>
     </>
   )

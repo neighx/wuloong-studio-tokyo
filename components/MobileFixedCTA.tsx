@@ -2,8 +2,13 @@
 
 import Link from "next/link"
 import { INSTAGRAM_URL } from "@/lib/constants"
+import { useLang } from "@/contexts/LanguageContext"
+import { t } from "@/lib/i18n"
 
 export default function MobileFixedCTA() {
+  const { lang } = useLang()
+  const T = t[lang].mobileFixed
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
       <div
@@ -16,7 +21,6 @@ export default function MobileFixedCTA() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        {/* Urgency strip */}
         <div
           className="text-center py-1.5 text-[10px] font-semibold tracking-wide"
           style={{
@@ -24,10 +28,9 @@ export default function MobileFixedCTA() {
             color: "#6b9fd4",
           }}
         >
-          ✓ 初めてでも大丈夫 · 完全予約制 · 女性1人OK
+          {T.strip}
         </div>
 
-        {/* Buttons */}
         <div className="flex items-stretch">
           <Link
             href="/booking"
@@ -35,20 +38,17 @@ export default function MobileFixedCTA() {
             style={{ background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" }}
           >
             <span>📅</span>
-            <span>今すぐ予約する</span>
+            <span>{T.book}</span>
           </Link>
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-4 text-center font-bold text-sm flex items-center justify-center gap-2"
-            style={{
-              color: "#9b8ec4",
-              borderLeft: "1px solid rgba(155,142,196,0.2)",
-            }}
+            style={{ color: "#9b8ec4", borderLeft: "1px solid rgba(155,142,196,0.2)" }}
           >
             <span>💬</span>
-            <span>気軽に相談</span>
+            <span>{T.consult}</span>
           </a>
         </div>
       </div>

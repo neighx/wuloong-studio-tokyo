@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader"
 import SiteFooter from "@/components/SiteFooter"
 import MobileFixedCTA from "@/components/MobileFixedCTA"
 import { SEO } from "@/lib/constants"
+import { LanguageProvider } from "@/contexts/LanguageContext"
 
 const dancingScript = Dancing_Script({
   subsets: ["latin"],
@@ -86,10 +87,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <SiteHeader />
-        <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-        <SiteFooter />
-        <MobileFixedCTA />
+        <LanguageProvider>
+          <SiteHeader />
+          <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+          <SiteFooter />
+          <MobileFixedCTA />
+        </LanguageProvider>
       </body>
     </html>
   )
