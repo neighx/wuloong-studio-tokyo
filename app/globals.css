@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'NumberSans';
+  src: local('Hiragino Sans'), local('Arial'), local('Helvetica Neue');
+  unicode-range: U+0030-0039, U+002C, U+002E, U+00A5, U+FF10-FF19;
+}
+
 :root {
   --background: #fafaf8;
   --foreground: #1a1a2e;
@@ -37,7 +43,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-cormorant), var(--font-noto-serif), "Hiragino Mincho ProN", serif;
+  font-family: 'NumberSans', var(--font-cormorant), var(--font-noto-serif), "Hiragino Mincho ProN", serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
 }
