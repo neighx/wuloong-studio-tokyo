@@ -21,9 +21,17 @@ export default function ContactPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setFormState("submitting")
-    // TODO: Implement contact form submission (Resend or Formspree)
-    await new Promise((r) => setTimeout(r, 800))
-    setFormState("success")
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error("API error")
+      setFormState("success")
+    } catch {
+      setFormState("error")
+    }
   }
 
   if (formState === "success") {
@@ -146,6 +154,9 @@ export default function ContactPage() {
               >
                 {formState === "submitting" ? T.submitting : T.submit}
               </button>
+              {formState === "error" && (
+                <p className="text-center text-red-500 text-sm">{T.errorMsg}</p>
+              )}
             </form>
           </div>
         </div>

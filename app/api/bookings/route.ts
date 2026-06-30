@@ -75,8 +75,14 @@ export async function POST(req: NextRequest) {
         date: body.date,
         time: body.time,
         isFirstTime: body.isFirstTime,
+        instagram: body.customerInstagram,
+        message: body.message,
       }),
-    ])
+    ]).then((results) => {
+      results.forEach((r) => {
+        if (r.status === "rejected") console.error("[bookings] Email send failed:", r.reason)
+      })
+    })
 
     return NextResponse.json({
       success: true,

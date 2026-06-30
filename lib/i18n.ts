@@ -456,6 +456,7 @@ export const t = {
       submit: "送信する",
       successTitle: "送信しました",
       successBody: "お問い合わせありがとうございます。内容を確認後、2〜3営業日以内にご連絡いたします。",
+      errorMsg: "送信に失敗しました。Instagramまたはメールから直接ご連絡ください。",
     },
   },
 
@@ -914,6 +915,7 @@ export const t = {
       submit: "Send",
       successTitle: "Message sent",
       successBody: "Thanks for reaching out. We'll review your message and get back to you within 2–3 business days.",
+      errorMsg: "Something went wrong. Please reach out via Instagram or email instead.",
     },
   },
 } as const
