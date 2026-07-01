@@ -51,21 +51,22 @@ export default function SiteHeader() {
     return () => { document.body.style.overflow = "" }
   }, [mobileOpen])
 
-  const LangToggle = ({ className = "" }: { className?: string }) => (
+  const LangToggle = ({ className = "", size = "sm" }: { className?: string; size?: "sm" | "md" }) => (
     <button
       onClick={() => setLang(lang === "ja" ? "en" : "ja")}
       className={className}
       style={{
-        fontSize: "10px",
+        fontSize: size === "md" ? "12px" : "10px",
         fontWeight: 700,
         letterSpacing: "0.18em",
-        color: "#94a3b8",
-        padding: "5px 10px",
+        color: "#6b9fd4",
+        padding: size === "md" ? "8px 18px" : "5px 10px",
         borderRadius: "9999px",
-        border: "1px solid rgba(148,163,184,0.35)",
+        border: "1px solid rgba(107,159,212,0.45)",
         transition: "all 0.2s",
-        background: "transparent",
+        background: "rgba(107,159,212,0.06)",
         cursor: "pointer",
+        minWidth: size === "md" ? "64px" : undefined,
       }}
       aria-label="Toggle language"
     >
@@ -200,15 +201,18 @@ export default function SiteHeader() {
           borderBottom: "1px solid #e8e8e8",
         }}
       >
-        <div className="relative flex items-center justify-between px-5 h-[60px]">
-          {/* Hamburger (left) */}
-          <button
-            className="p-2 text-[#1a2340] relative z-10"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? T.header.menuClose : T.header.menuOpen}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+        <div className="relative flex items-center justify-between px-4 h-[60px]">
+          {/* Left: Hamburger + Lang toggle */}
+          <div className="flex items-center gap-2 relative z-10">
+            <button
+              className="p-2 text-[#1a2340]"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? T.header.menuClose : T.header.menuOpen}
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+            <LangToggle />
+          </div>
 
           {/* Logo center */}
           <Link href="/" className="absolute left-1/2 -translate-x-1/2">
@@ -250,6 +254,12 @@ export default function SiteHeader() {
         style={{ paddingTop: "58px" }}
       >
         <div className="px-8 py-6 h-full overflow-y-auto">
+          {/* Lang toggle — top of drawer, prominent */}
+          <div className="flex items-center gap-3 mb-6 pb-5 border-b border-[#f2f2f2]">
+            <span className="text-xs text-[#94a3b8] tracking-widest uppercase">Language</span>
+            <LangToggle size="md" />
+          </div>
+
           <nav className="flex flex-col">
             {navLinks.map((link) => (
               <Link
@@ -282,11 +292,6 @@ export default function SiteHeader() {
             >
               {T.header.contactInstagram}
             </a>
-          </div>
-
-          {/* Lang toggle in drawer */}
-          <div className="mt-8 flex justify-center">
-            <LangToggle />
           </div>
 
           <div className="mt-8 pt-6 border-t border-[#f2f2f2]">
