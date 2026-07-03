@@ -165,7 +165,7 @@ export default function HomePageContent() {
       </section>
 
       {/* 5. Booking Calendar */}
-      <section className="py-24 px-4 sm:px-6" style={{ background: "linear-gradient(155deg, #f8f6ff 0%, #f0f4ff 100%)" }}>
+      <section id="calendar-section" className="py-24 px-4 sm:px-6" style={{ background: "linear-gradient(155deg, #f8f6ff 0%, #f0f4ff 100%)" }}>
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-4">{T.booking.eyebrow}</p>

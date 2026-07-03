@@ -49,7 +49,7 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/booking"
+              href="#calendar-section"
               className="text-white transition-opacity hover:opacity-80"
               style={{
                 fontSize: "11px",
