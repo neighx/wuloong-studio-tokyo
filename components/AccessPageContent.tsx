@@ -29,15 +29,15 @@ export default function AccessPageContent() {
       <section className="py-16 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           {/* 地図エリア */}
-          <div className="w-full rounded-3xl overflow-hidden mb-10" aria-label={T.mapArea}>
+          <div className="flex justify-center mb-10" aria-label={T.mapArea}>
             {HAS_MAP_IMAGE ? (
               <Image
                 src="/images/map/map.png"
                 alt="Wuloong Studio TOKYO Map"
                 width={1179}
                 height={1897}
-                className="w-full h-auto"
-                sizes="(max-width:768px) 100vw, 896px"
+                className="w-full sm:w-[480px] lg:w-[520px] h-auto rounded-3xl"
+                sizes="(max-width:640px) 100vw, 520px"
               />
             ) : (
               /* Google Maps iframe (埋め込みURLが入ったら下をアンコメント) */
