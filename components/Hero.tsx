@@ -11,7 +11,7 @@ export default function Hero() {
   const T = t[lang].hero
 
   return (
-    <>
+    <div className="bg-white">
       {/* Studio photo */}
       <div className="mt-[60px] lg:mt-[120px] px-3 sm:px-5 lg:px-10">
         <div
@@ -112,6 +112,6 @@ export default function Hero() {
           />
         </div>
       </div>
-    </>
+    </div>
   )
 }
