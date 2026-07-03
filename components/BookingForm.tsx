@@ -203,16 +203,6 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
           />
         </div>
 
-        <label className="flex items-center gap-3 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            name="isFirstTime"
-            checked={form.isFirstTime}
-            onChange={(e) => setForm((prev) => ({ ...prev, isFirstTime: e.target.checked }))}
-            className="w-5 h-5 rounded border-2 border-[#6b9fd4] accent-[#6b9fd4] cursor-pointer"
-          />
-          <span className="text-sm text-[#4a5568]">{TF.firstTimeCheckbox}</span>
-        </label>
       </div>
 
       {/* Submit */}
