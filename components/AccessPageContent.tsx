@@ -29,14 +29,14 @@ export default function AccessPageContent() {
       <section className="py-16 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           {/* 地図エリア */}
-          <div className="w-full rounded-3xl overflow-hidden aspect-video relative mb-10" aria-label={T.mapArea}>
+          <div className="w-full rounded-3xl overflow-hidden mb-10" aria-label={T.mapArea}>
             {HAS_MAP_IMAGE ? (
-              /* 地図画像 (scripts/copy-media.sh でコピー後) */
               <Image
                 src="/images/map/map.png"
                 alt="Wuloong Studio TOKYO Map"
-                fill
-                className="object-cover"
+                width={1179}
+                height={1897}
+                className="w-full h-auto"
                 sizes="(max-width:768px) 100vw, 896px"
               />
             ) : (
@@ -48,7 +48,7 @@ export default function AccessPageContent() {
                 allowFullScreen loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               /> */
-              <div className="w-full h-full bg-gradient-to-br from-[#e8f0f8] to-[#f0ecf8] flex items-center justify-center">
+              <div className="w-full h-64 bg-gradient-to-br from-[#e8f0f8] to-[#f0ecf8] flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-6xl mb-4">📍</div>
                   <p className="text-[#64748b] text-sm">{T.mapArea}</p>
