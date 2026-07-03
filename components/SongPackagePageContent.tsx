@@ -44,7 +44,7 @@ export default function SongPackagePageContent() {
           style={{ height: "65vh", maxHeight: 780, minHeight: 340, borderRadius: "4px" }}
         >
           <Image
-            src="/images/studio/studio-main.jpg"
+            src="/images/studio/DSC09074-2.jpg"
             alt="Wuloong Studio TOKYO — Song Package"
             fill
             priority
