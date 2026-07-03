@@ -54,10 +54,10 @@ export const t = {
       title: "集中できる、でも緊張しすぎない空間。",
       subtitle: "音楽に向き合える、居心地のいいプライベート空間。",
       specs: [
-        { label: "エリア", value: "三軒茶屋・世田谷" },
-        { label: "スタイル", value: "完全予約制" },
-        { label: "空間", value: "完全プライベートREC" },
-        { label: "サポート", value: "相談しやすいエンジニア常駐" },
+        { label: "エリア", value: "三軒茶屋・世田谷", desc: "渋谷から近く、制作や仕事の前後にも立ち寄りやすい場所。\n落ち着いた街の空気の中で録音できます。" },
+        { label: "スタイル", value: "完全予約制", desc: "他のお客様と時間が重ならない、静かな予約制。\n自分のペースで声と曲に向き合えます。" },
+        { label: "空間", value: "プライベートREC", desc: "大きすぎない、近すぎない。\n緊張しすぎず、自然な声を録りやすい空間です。" },
+        { label: "サポート", value: "エンジニア常駐", desc: "録音の進め方や声のニュアンスも、その場で相談できます。\n初めての方も、作品づくり中の方も安心です。" },
       ],
     },
     booking: {
@@ -94,13 +94,14 @@ export const t = {
       note: "相談だけでもご利用いただけます。",
     },
     whyBook: {
-      eyebrow: "WHY BOOK HERE",
-      title: "Wuloong Studioが選ばれる理由",
+      eyebrow: "WHY WULOONG",
+      title: "ここで録ると、曲が前に進む理由",
+      subtitle: "はじめての録音も、本気で仕上げたい1曲も。\nWuloong Studioでは、声を録る時間がそのまま作品づくりにつながります。",
       cards: [
-        { num: "01", title: "歌詞と音源があればOK", desc: "スタジオ初心者でも大丈夫。録音の流れはエンジニアが一緒に確認しながら進めます。" },
-        { num: "02", title: "完全予約制のプライベート空間", desc: "あなただけの空間で録音できます。他のお客様と空間を共有しません。" },
-        { num: "03", title: "録るだけで終わらない", desc: "録音からMIX・マスタリングまで、1曲を完成させるところまでサポートします。" },
-        { num: "04", title: "三軒茶屋で通いやすい", desc: "渋谷から2駅。落ち着いた環境で、定期的に来やすい場所にあります。" },
+        { num: "01", title: "アイデアのまま終わらせない", desc: "歌詞やメロディの断片も、録音しながら1曲の形に整えていきます。" },
+        { num: "02", title: "声のニュアンスを一緒に探せる", desc: "歌い方、重ね方、テンション感まで確認しながら、\n曲に合うボーカルを録っていきます。" },
+        { num: "03", title: "録音後の仕上げまで相談できる", desc: "ボーカル編集、MIX、マスタリングまで、\nリリースに向けて必要な工程を相談できます。" },
+        { num: "04", title: "次の動きまで見えやすい", desc: "録って終わりではなく、\nリリース、SNS、次の制作まで整理しやすくなります。" },
       ],
     },
     faqSection: {
@@ -528,10 +529,10 @@ export const t = {
       title: "Focused, but not tense.",
       subtitle: "A comfortable private space where you can focus on your music.",
       specs: [
-        { label: "Location", value: "Sangenjaya · Setagaya" },
-        { label: "Style", value: "Appointment Only" },
-        { label: "Space", value: "Fully Private REC" },
-        { label: "Support", value: "Engineer On-Site" },
+        { label: "Location", value: "Sangenjaya · Setagaya", desc: "Close to Shibuya — easy to stop by before or after work.\nA calm neighbourhood where you can focus." },
+        { label: "Style", value: "Appointment Only", desc: "No overlap with other clients, no noise, no rush.\nYour session, your pace." },
+        { label: "Space", value: "Fully Private REC", desc: "Not too big, not too close.\nA space where you can relax and let your natural voice come through." },
+        { label: "Support", value: "Engineer On-Site", desc: "Talk through the recording flow or the feel of your vocal right on the spot.\nFor first-timers and seasoned artists alike." },
       ],
     },
     booking: {
@@ -568,13 +569,14 @@ export const t = {
       note: "No commitment required — a conversation is always free.",
     },
     whyBook: {
-      eyebrow: "WHY BOOK HERE",
-      title: "Why Choose Wuloong Studio",
+      eyebrow: "WHY WULOONG",
+      title: "Why your song moves forward here",
+      subtitle: "Whether it's your first recording or a track you're serious about finishing —\nyour time in the booth becomes real progress on your song.",
       cards: [
-        { num: "01", title: "Just bring lyrics & a track", desc: "No studio experience needed. We walk you through the recording process step by step." },
-        { num: "02", title: "Fully private, appointment-only", desc: "The whole space is yours. No strangers, no pressure — just you and your music." },
-        { num: "03", title: "More than just recording", desc: "From tracking to mix and mastering — we support you all the way to a finished, releasable song." },
-        { num: "04", title: "Easy to get to in Sangenjaya", desc: "Two stops from Shibuya. A calm neighborhood that's easy to build a habit around." },
+        { num: "01", title: "Ideas don't stay as ideas", desc: "Lyrics, melody fragments, rough concepts — we shape them into something real as we record." },
+        { num: "02", title: "Find your vocal together", desc: "Delivery, layering, tone — we check every detail as we go\nand capture the vocal that fits your song." },
+        { num: "03", title: "Post-recording support included", desc: "Vocal editing, mix, mastering —\nyou can talk through every step toward a release-ready track." },
+        { num: "04", title: "A clearer path to what's next", desc: "Recording here isn't the end —\nrelease, social, and your next project all become easier to plan." },
       ],
     },
     faqSection: {

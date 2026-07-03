@@ -24,14 +24,15 @@ export default function HomePageContent() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-4">{T.whyBook.eyebrow}</p>
-            <h2 className="section-title">{T.whyBook.title}</h2>
+            <h2 className="section-title mb-4">{T.whyBook.title}</h2>
+            <p className="section-subtitle max-w-lg mx-auto" style={{ whiteSpace: "pre-line" }}>{(T.whyBook as unknown as { subtitle: string }).subtitle}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {(T.whyBook.cards as unknown as { num: string; title: string; desc: string }[]).map((card) => (
               <div key={card.num} className="glass-card rounded-2xl p-6">
                 <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.3em] mb-3">{card.num}</p>
                 <h3 className="font-bold text-[#1a1a2e] text-sm mb-2 leading-snug">{card.title}</h3>
-                <p className="text-xs text-[#64748b] leading-relaxed">{card.desc}</p>
+                <p className="text-xs text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>{card.desc}</p>
               </div>
             ))}
           </div>
@@ -133,11 +134,12 @@ export default function HomePageContent() {
               <p className="section-subtitle max-w-md mx-auto">{T.studio.subtitle}</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
-              {T.studio.specs.map((item) => (
-                <div key={item.label} className="glass-card rounded-2xl p-4 text-center">
-                  <p className="text-[10px] text-[#94a3b8] mb-1.5">{item.label}</p>
-                  <p className="text-sm font-bold text-[#1a1a2e] leading-tight">{item.value}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {(T.studio.specs as unknown as { label: string; value: string; desc: string }[]).map((item) => (
+                <div key={item.label} className="glass-card rounded-2xl p-5">
+                  <p className="text-[10px] text-[#94a3b8] tracking-widest uppercase mb-1.5">{item.label}</p>
+                  <p className="text-sm font-bold text-[#1a1a2e] mb-2 leading-tight">{item.value}</p>
+                  <p className="text-xs text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>{item.desc}</p>
                 </div>
               ))}
             </div>
