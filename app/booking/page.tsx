@@ -10,9 +10,11 @@ import { t } from "@/lib/i18n"
 function BookingContent() {
   const searchParams = useSearchParams()
   const plan = searchParams.get("plan") ?? undefined
+  const date = searchParams.get("date") ?? undefined
+  const time = searchParams.get("time") ?? undefined
 
   return (
-    <BookingForm defaultPlan={plan} />
+    <BookingForm defaultPlan={plan} defaultDate={date} defaultTime={time} />
   )
 }
 

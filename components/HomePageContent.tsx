@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import Hero from "@/components/Hero"
 import OfferCards from "@/components/OfferCards"
@@ -13,6 +14,8 @@ import { t } from "@/lib/i18n"
 export default function HomePageContent() {
   const { lang } = useLang()
   const T = t[lang]
+  const [pickedDate, setPickedDate] = useState("")
+  const [pickedTime, setPickedTime] = useState("")
 
   return (
     <>
@@ -183,11 +186,29 @@ export default function HomePageContent() {
             </a>
           </div>
 
-          <BookingCalendar />
+          <BookingCalendar
+            onSelectDateTime={(date, time) => {
+              setPickedDate(date)
+              setPickedTime(time)
+            }}
+            selectedDate={pickedDate}
+            selectedTime={pickedTime}
+          />
+
+          {/* CTA after calendar — shows dynamic link when date+time are selected */}
           <div className="mt-8 text-center flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/booking" className="btn-primary text-sm">
-              {T.booking.btnForm}
-            </Link>
+            {pickedDate && pickedTime ? (
+              <Link
+                href={`/booking?date=${pickedDate}&time=${encodeURIComponent(pickedTime)}`}
+                className="btn-primary text-sm animate-pulse-once"
+              >
+                {T.booking.btnFormSelected}
+              </Link>
+            ) : (
+              <Link href="/booking" className="btn-primary text-sm">
+                {T.booking.btnForm}
+              </Link>
+            )}
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm">
               {T.booking.btnInstagram}
             </a>

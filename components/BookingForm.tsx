@@ -8,13 +8,13 @@ import { t } from "@/lib/i18n"
 
 type FormState = "idle" | "submitting" | "success" | "error"
 
-export default function BookingForm({ defaultPlan }: { defaultPlan?: string }) {
+export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: { defaultPlan?: string; defaultDate?: string; defaultTime?: string }) {
   const { lang } = useLang()
   const T = t[lang]
   const TF = T.bookingForm
 
-  const [selectedDate, setSelectedDate] = useState("")
-  const [selectedTime, setSelectedTime] = useState("")
+  const [selectedDate, setSelectedDate] = useState(defaultDate ?? "")
+  const [selectedTime, setSelectedTime] = useState(defaultTime ?? "")
   const [formState, setFormState] = useState<FormState>("idle")
   const [form, setForm] = useState({
     planId: defaultPlan ?? "first-time-2h",

@@ -66,6 +66,7 @@ export const t = {
       subtitle: "希望の日程を選んで、そのままフォームから申し込めます。",
       btnForm: "予約フォームに進む",
       btnInstagram: "日程をInstagramで相談する",
+      btnFormSelected: "この日程で予約フォームへ進む",
     },
     bookingReassurance: {
       title: "予約の前に、気になることがあれば",
@@ -541,6 +542,7 @@ export const t = {
       subtitle: "Pick a date and submit your booking request right here.",
       btnForm: "Go to Booking Form",
       btnInstagram: "Ask about dates on Instagram",
+      btnFormSelected: "Continue to booking form",
     },
     bookingReassurance: {
       title: "Questions before you book?",
