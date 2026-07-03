@@ -19,7 +19,26 @@ export default function HomePageContent() {
       {/* 1. Hero */}
       <Hero />
 
-      {/* 2. Offer Cards */}
+      {/* 2. Why Book — 4 reasons */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-4">{T.whyBook.eyebrow}</p>
+            <h2 className="section-title">{T.whyBook.title}</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {(T.whyBook.cards as unknown as { num: string; title: string; desc: string }[]).map((card) => (
+              <div key={card.num} className="glass-card rounded-2xl p-6">
+                <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.3em] mb-3">{card.num}</p>
+                <h3 className="font-bold text-[#1a1a2e] text-sm mb-2 leading-snug">{card.title}</h3>
+                <p className="text-xs text-[#64748b] leading-relaxed">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Offer Cards */}
       <OfferCards />
 
       {/* 3. First Time Friendly */}
@@ -34,21 +53,15 @@ export default function HomePageContent() {
                 {T.firstTime.title}<br />
                 <span className="gradient-text">{T.firstTime.titleHighlight}</span>
               </h2>
-              <p className="text-[#64748b] leading-[1.95] mb-8 max-w-sm">
+              <p className="text-[#64748b] leading-[1.95] mb-8 max-w-sm" style={{ whiteSpace: "pre-line" }}>
                 {T.firstTime.body}
               </p>
 
               <div className="grid grid-cols-1 gap-3 mb-10">
-                {[
-                  { icon: "📝", text: T.firstTime.bullets[0] },
-                  { icon: "🎙️", text: T.firstTime.bullets[1] },
-                  { icon: "💡", text: T.firstTime.bullets[2] },
-                  { icon: "🔒", text: T.firstTime.bullets[3] },
-                  { icon: "👍", text: T.firstTime.bullets[4] },
-                ].map((item) => (
-                  <div key={item.icon} className="flex items-start gap-3">
-                    <span className="text-xl flex-shrink-0 mt-0.5">{item.icon}</span>
-                    <p className="text-sm text-[#4a5568] leading-relaxed">{item.text}</p>
+                {["📝", "🔒", "🎚️"].map((icon, i) => (
+                  <div key={icon} className="flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0 mt-0.5">{icon}</span>
+                    <p className="text-sm text-[#4a5568] leading-relaxed">{(T.firstTime.bullets as unknown as string[])[i]}</p>
                   </div>
                 ))}
               </div>
@@ -154,6 +167,20 @@ export default function HomePageContent() {
             <h2 className="section-title mb-3">{T.booking.title}</h2>
             <p className="section-subtitle">{T.booking.subtitle}</p>
           </div>
+          {/* Reassurance before calendar */}
+          <div className="glass-card rounded-2xl p-6 mb-8 text-center">
+            <h3 className="font-semibold text-[#1a1a2e] mb-2 text-sm">{T.bookingReassurance.title}</h3>
+            <p className="text-sm text-[#64748b] leading-relaxed mb-4" style={{ whiteSpace: "pre-line" }}>{T.bookingReassurance.desc}</p>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-[#6b9fd4] text-xs font-semibold border border-[#6b9fd4]/30 rounded-full px-5 py-2 hover:bg-[#6b9fd4]/5 transition-colors"
+            >
+              {T.bookingReassurance.btnInstagram}
+            </a>
+          </div>
+
           <BookingCalendar />
           <div className="mt-8 text-center flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/booking" className="btn-primary text-sm">
@@ -186,6 +213,17 @@ export default function HomePageContent() {
                 <p>{T.soundDirection.p2}</p>
                 <p>{T.soundDirection.p3}</p>
                 <p>{T.soundDirection.p4}</p>
+              </div>
+              <div className="mt-6">
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-[#7eb8e8] text-xs font-semibold rounded-full px-5 py-2.5 hover:bg-[#7eb8e8]/10 transition-colors"
+                  style={{ border: "1px solid rgba(126,184,232,0.35)" }}
+                >
+                  {T.soundDirection.btnInstagram}
+                </a>
               </div>
             </div>
 

@@ -1,8 +1,10 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
+import { INSTAGRAM_URL } from "@/lib/constants"
 
 export default function Hero() {
   const { lang } = useLang()
@@ -31,29 +33,65 @@ export default function Hero() {
       <div className="bg-white text-center" style={{ padding: "6rem 2rem 3rem" }}>
         <p
           className="text-[#1a2340]"
-          style={{ fontSize: "clamp(1.15rem, 2.8vw, 2rem)", fontWeight: 300, letterSpacing: "0.12em", lineHeight: 2.1, marginBottom: "3rem" }}
+          style={{ fontSize: "clamp(1.15rem, 2.8vw, 2rem)", fontWeight: 300, letterSpacing: "0.12em", lineHeight: 2.1, marginBottom: "2rem" }}
         >
           {T.tagline}
         </p>
 
-        <div style={{ maxWidth: "600px", margin: "0 auto 4rem" }}>
+        {/* Hero description + CTAs */}
+        <div style={{ maxWidth: "560px", margin: "0 auto 3rem" }}>
+          <p
+            className="text-[#64748b]"
+            style={{ fontSize: "clamp(0.82rem, 1.2vw, 0.95rem)", lineHeight: 2.2, letterSpacing: "0.04em", marginBottom: "2rem", whiteSpace: "pre-line" }}
+          >
+            {T.heroDesc}
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/booking"
+              className="text-white transition-opacity hover:opacity-80"
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)",
+                padding: "13px 28px",
+                borderRadius: "9999px",
+                display: "inline-block",
+              }}
+            >
+              {T.btnAvailability}
+            </Link>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#6b9fd4",
+                padding: "12px 28px",
+                borderRadius: "9999px",
+                border: "1px solid rgba(107,159,212,0.4)",
+                display: "inline-block",
+                transition: "all 0.2s",
+              }}
+            >
+              {T.btnInstagram}
+            </a>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: "600px", margin: "0 auto 3.5rem" }}>
           <p
             className="text-[#1a2340]"
-            style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontWeight: 500, letterSpacing: "0.05em", lineHeight: 2.0, marginBottom: "1.8rem", fontStyle: "italic" }}
+            style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontWeight: 500, letterSpacing: "0.05em", lineHeight: 2.0, fontStyle: "italic" }}
           >
             &ldquo;{T.quote}&rdquo;
-          </p>
-          <p
-            className="text-[#64748b]"
-            style={{ fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)", lineHeight: 2.1, letterSpacing: "0.02em", marginBottom: "1.2rem" }}
-          >
-            {T.body1}
-          </p>
-          <p
-            className="text-[#64748b]"
-            style={{ fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)", lineHeight: 2.1, letterSpacing: "0.02em" }}
-          >
-            {T.body2}
           </p>
         </div>
 
