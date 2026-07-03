@@ -1,111 +1,243 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import CTASection from "@/components/CTASection"
-import { INSTAGRAM_URL } from "@/lib/constants"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
+import { INSTAGRAM_URL } from "@/lib/constants"
+
+type IncludedItem = { num: string; title: string; desc: string }
+type TMonthlySupportPage = {
+  eyebrow: string
+  title: string
+  price: string
+  priceNote: string
+  subtitle: string
+  btnConsult: string
+  btnInstagram: string
+  includedEyebrow: string
+  includedTitle: string
+  included: IncludedItem[]
+  escortTitle: string
+  escortBody: string
+  forWhoEyebrow: string
+  forWhoTitle: string
+  forWhoBody: string
+  forWho: string[]
+  priceEyebrow: string
+  priceTitle: string
+  priceDisplay: string
+  priceNotes: string[]
+}
 
 export default function MonthlySupportPageContent() {
   const { lang } = useLang()
-  const T = t[lang].monthlySupportPage
+  const T = t[lang].monthlySupportPage as unknown as TMonthlySupportPage
 
   return (
-    <>
-      {/* Header */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 gradient-bg-soft">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-[#e8afc4] text-sm font-semibold mb-3 tracking-wide">{T.eyebrow}</p>
-          <h1 className="section-title mb-4">{T.title}</h1>
-          <p className="text-[#e8afc4] text-3xl font-black mb-4">{T.price}</p>
-          <p className="section-subtitle max-w-xl mx-auto">
-            {T.subtitle}
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-            >
-              {T.btnInstagram}
-            </a>
-            <Link href="/contact" className="btn-secondary">
-              {T.btnContact}
-            </Link>
-          </div>
+    <div className="bg-white">
+      {/* ── First view ── */}
+      <div className="mt-[60px] lg:mt-[120px] px-3 sm:px-5 lg:px-10">
+        <div
+          className="relative w-full overflow-hidden"
+          style={{ height: "65vh", maxHeight: 780, minHeight: 340, borderRadius: "4px" }}
+        >
+          <Image
+            src="/images/studio/ryuw.jpg"
+            alt="Wuloong Studio TOKYO — Monthly Artist Support"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="(max-width:640px) 100vw, 95vw"
+          />
+          <div className="absolute inset-0" style={{ background: "rgba(10,10,20,0.18)" }} />
         </div>
-      </section>
+      </div>
 
-      {/* What's included */}
-      <section className="py-16 px-4 sm:px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="section-title text-center mb-12">{T.includedTitle}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* ── Editorial intro ── */}
+      <div className="bg-white text-center" style={{ padding: "5rem 2rem 3rem" }}>
+        <p
+          className="text-[#6b9fd4]"
+          style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.45em", textTransform: "uppercase", marginBottom: "1.25rem" }}
+        >
+          {T.eyebrow}
+        </p>
+        <h1
+          className="text-[#1a2340] font-black"
+          style={{ fontSize: "clamp(1.5rem, 3.2vw, 2.6rem)", letterSpacing: "0.04em", lineHeight: 1.3, marginBottom: "1.5rem" }}
+        >
+          {T.title}
+        </h1>
+        <p
+          className="gradient-text font-black"
+          style={{ fontSize: "clamp(1.5rem, 2.8vw, 2.2rem)", marginBottom: "2rem" }}
+        >
+          {T.price}
+        </p>
+        <p
+          className="text-[#64748b]"
+          style={{ fontSize: "clamp(0.82rem, 1.2vw, 0.95rem)", lineHeight: 2.1, letterSpacing: "0.03em", maxWidth: "520px", margin: "0 auto 2.5rem", whiteSpace: "pre-line" }}
+        >
+          {T.subtitle}
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white transition-opacity hover:opacity-80"
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)",
+              padding: "13px 28px",
+              borderRadius: "9999px",
+              display: "inline-block",
+            }}
+          >
+            {T.btnConsult}
+          </a>
+          <Link
+            href="/booking"
+            style={{
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "#6b9fd4",
+              padding: "12px 28px",
+              borderRadius: "9999px",
+              border: "1px solid rgba(107,159,212,0.4)",
+              display: "inline-block",
+              transition: "all 0.2s",
+            }}
+          >
+            {T.btnInstagram}
+          </Link>
+        </div>
+        <p
+          className="text-[#94a3b8]"
+          style={{ fontSize: "11px", marginTop: "1rem", letterSpacing: "0.03em" }}
+        >
+          {T.priceNote}
+        </p>
+      </div>
+
+      {/* ── Included ── */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-4">{T.includedEyebrow}</p>
+            <h2 className="section-title">{T.includedTitle}</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {T.included.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-3xl p-6 bg-gradient-to-br from-[#fde8f4] to-[#fdf5e8] border border-[#e8afc4]/30"
-              >
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <h3 className="font-bold text-[#1a1a2e] mb-2">{item.title}</h3>
-                <p className="text-sm text-[#64748b] leading-relaxed">{item.desc}</p>
+              <div key={item.num} className="glass-card rounded-2xl p-6">
+                <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.3em] mb-3">{item.num}</p>
+                <h3 className="font-bold text-[#1a1a2e] text-sm mb-3 leading-snug">{item.title}</h3>
+                <p className="text-xs text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* For who */}
-      <section className="py-16 px-4 sm:px-6 bg-gradient-to-br from-[#fdf5e8] to-[#fde8f4]">
+      {/* ── Escort message ── */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-3xl mx-auto">
-          <h2 className="section-title text-center mb-10">{T.forWhoTitle}</h2>
-          <div className="space-y-3">
-            {T.forWho.map((item) => (
-              <div key={item} className="glass-card rounded-2xl p-5 flex items-start gap-3">
-                <span className="text-[#e8afc4] font-bold flex-shrink-0">✓</span>
-                <p className="text-sm text-[#4a5568] leading-relaxed">{item}</p>
-              </div>
-            ))}
+          <div
+            className="rounded-3xl p-10 sm:p-14 text-center"
+            style={{ background: "linear-gradient(155deg, #f0f5ff 0%, #f8f0ff 100%)", border: "1px solid rgba(155,142,196,0.2)" }}
+          >
+            <h2
+              className="font-black text-[#1a1a2e] mb-6 leading-snug"
+              style={{ fontSize: "clamp(1.1rem, 2vw, 1.5rem)" }}
+            >
+              {T.escortTitle}
+            </h2>
+            <p
+              className="text-[#64748b] leading-[2] text-sm sm:text-base"
+              style={{ whiteSpace: "pre-line" }}
+            >
+              {T.escortBody}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Message */}
-      <section className="py-16 px-4 sm:px-6 bg-[#1a1a2e] text-white">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-[#e8afc4] text-sm font-semibold mb-6 tracking-wide">{T.messageLabel}</p>
-          <blockquote className="text-xl sm:text-2xl font-bold leading-relaxed mb-8" style={{ whiteSpace: "pre-line" }}>
-            {T.quote}
-          </blockquote>
-          <p className="text-white/60 text-sm leading-relaxed max-w-xl mx-auto">
-            {T.messageBody}
-          </p>
-        </div>
-      </section>
-
-      {/* Pricing note */}
-      <section className="py-12 px-4 sm:px-6 bg-white">
-        <div className="max-w-2xl mx-auto glass-card rounded-3xl p-6 text-sm text-[#64748b] space-y-2">
-          <p className="font-semibold text-[#1a1a2e] mb-3">{T.pricingNoteTitle}</p>
-          {T.pricingNotes.map((note) => (
-            <p key={note}>・ {note}</p>
-          ))}
-          <div className="pt-4 flex flex-wrap gap-3">
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="btn-primary inline-block text-sm">
-              {T.btnInstagram}
-            </a>
-            <Link href="/contact" className="btn-secondary inline-block text-sm">
-              {T.btnContact}
-            </Link>
+      {/* ── For Artists ── */}
+      <section className="py-20 px-4 sm:px-6" style={{ background: "linear-gradient(155deg, #faf8f5 0%, #f0f5ff 100%)" }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-14 items-start">
+            <div>
+              <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-5">{T.forWhoEyebrow}</p>
+              <h2 className="section-title mb-6">{T.forWhoTitle}</h2>
+              <p
+                className="text-[#64748b] leading-[1.95] text-sm sm:text-base"
+                style={{ whiteSpace: "pre-line" }}
+              >
+                {T.forWhoBody}
+              </p>
+            </div>
+            <div className="space-y-3">
+              {T.forWho.map((item) => (
+                <div key={item} className="glass-card rounded-2xl p-4 flex items-start gap-3">
+                  <span
+                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                    style={{ background: "linear-gradient(135deg, #6b9fd4, #9b8ec4)" }}
+                  >
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <p className="text-sm text-[#4a5568] leading-relaxed">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <CTASection
-        title={T.ctaTitle}
-        subtitle={T.ctaSubtitle}
-      />
-    </>
+      {/* ── Pricing ── */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-[#6b9fd4] text-[10px] font-bold tracking-[0.45em] uppercase mb-4">{T.priceEyebrow}</p>
+            <h2 className="section-title">{T.priceTitle}</h2>
+          </div>
+          <div className="glass-card rounded-3xl p-8 sm:p-10 text-center">
+            <p
+              className="gradient-text font-black mb-6"
+              style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
+            >
+              {T.priceDisplay}
+            </p>
+            <div className="space-y-2 mb-8">
+              {T.priceNotes.map((note) => (
+                <p key={note} className="text-sm text-[#64748b]">{note}</p>
+              ))}
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-sm"
+              >
+                {T.btnConsult}
+              </a>
+              <Link href="/contact" className="btn-secondary text-sm">
+                {T.btnInstagram}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <CTASection />
+    </div>
   )
 }
