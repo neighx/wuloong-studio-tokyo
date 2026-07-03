@@ -95,7 +95,7 @@ export const t = {
     },
     whyBook: {
       eyebrow: "WHY BOOK HERE",
-      title: "予約したくなる4つの理由",
+      title: "Wuloong Studioが選ばれる理由",
       cards: [
         { num: "01", title: "歌詞と音源があればOK", desc: "スタジオ初心者でも大丈夫。録音の流れはエンジニアが一緒に確認しながら進めます。" },
         { num: "02", title: "完全予約制のプライベート空間", desc: "あなただけの空間で録音できます。他のお客様と空間を共有しません。" },
@@ -569,7 +569,7 @@ export const t = {
     },
     whyBook: {
       eyebrow: "WHY BOOK HERE",
-      title: "4 reasons to book",
+      title: "Why Choose Wuloong Studio",
       cards: [
         { num: "01", title: "Just bring lyrics & a track", desc: "No studio experience needed. We walk you through the recording process step by step." },
         { num: "02", title: "Fully private, appointment-only", desc: "The whole space is yours. No strangers, no pressure — just you and your music." },
