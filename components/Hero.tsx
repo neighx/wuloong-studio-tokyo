@@ -89,7 +89,7 @@ export default function Hero() {
         <div style={{ maxWidth: "600px", margin: "0 auto 3.5rem" }}>
           <p
             className="text-[#1a2340]"
-            style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontWeight: 500, letterSpacing: "0.05em", lineHeight: 2.0, fontStyle: "italic" }}
+            style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", fontWeight: 500, letterSpacing: "0.05em", lineHeight: 2.0, fontStyle: "italic", whiteSpace: "pre-line" }}
           >
             &ldquo;{T.quote}&rdquo;
           </p>
