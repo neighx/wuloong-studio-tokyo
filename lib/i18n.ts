@@ -127,6 +127,7 @@ export const t = {
       line: "LINEで相談する",
       calendarLink: "予約カレンダーを見る",
       location: "📍 三軒茶屋エリア（予約確定後に詳細をご案内）\n完全予約制 · プライベートスタジオ",
+      terms: "利用規約",
       privacy: "プライバシーポリシー",
       links: [
         { href: "/first-time", label: "初めての方へ" },
@@ -604,6 +605,7 @@ export const t = {
       line: "Contact via LINE",
       calendarLink: "View Booking Calendar",
       location: "📍 Sangenjaya area (exact address sent after booking)\nAppointment Only · Private Studio",
+      terms: "Terms of Service",
       privacy: "Privacy Policy",
       links: [
         { href: "/first-time", label: "First Time" },

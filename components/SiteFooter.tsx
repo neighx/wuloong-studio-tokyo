@@ -94,6 +94,9 @@ export default function SiteFooter() {
             © {new Date().getFullYear()} Wuloong Studio TOKYO. All rights reserved.
           </p>
           <div className="flex gap-6">
+            <Link href="/terms" className="text-xs text-white/40 hover:text-white/60 transition-colors">
+              {T.terms}
+            </Link>
             <Link href="/contact" className="text-xs text-white/40 hover:text-white/60 transition-colors">
               {T.privacy}
             </Link>
