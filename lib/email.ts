@@ -108,14 +108,52 @@ function customerHtml(d: BookingConfirmationData) {
       </table>
     </div>
 
+    <p style="font-size:14px;color:#4a5568;line-height:1.8;">スタジオ所在地は下記になります。</p>
+
+    <div style="background:#f0f5ff;border-radius:12px;padding:20px;margin:16px 0;border:1px solid #dbeafe;">
+      <p style="font-size:14px;color:#1a2340;font-weight:700;margin:0 0 10px;">Wuloong Studio TOKYO</p>
+      <p style="font-size:14px;color:#4a5568;line-height:2;margin:0;">
+        〒154-0011<br>
+        東京都世田谷区上馬5-40-12<br>
+        ラコルタ404
+      </p>
+    </div>
+
     <p style="font-size:14px;color:#4a5568;line-height:1.8;">
-      内容を確認後、<strong>メールまたはInstagram DM</strong>でご連絡いたします。<br>
-      しばらくお待ちください。
+      当日はご予約時間に合わせてお越しください。<br>
+      道に迷われた場合は、お気軽にご連絡ください。
+    </p>
+
+    <p style="font-size:14px;color:#4a5568;line-height:1.8;">
+      担当 石川<br>
+      080-8436-2412
+    </p>
+
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
+
+    <p style="font-size:13px;color:#64748b;line-height:1.8;">Thank you for your booking, ${d.customerName}.</p>
+    <p style="font-size:13px;color:#4a5568;line-height:1.8;">The studio address is as follows:</p>
+
+    <div style="background:#f0f5ff;border-radius:12px;padding:20px;margin:16px 0;border:1px solid #dbeafe;">
+      <p style="font-size:13px;color:#1a2340;font-weight:700;margin:0 0 10px;">Wuloong Studio TOKYO</p>
+      <p style="font-size:13px;color:#4a5568;line-height:2;margin:0;">
+        5-40-12 Kamiuma, Setagaya-ku, Tokyo 154-0011<br>
+        Lacolta 404
+      </p>
+    </div>
+
+    <p style="font-size:13px;color:#4a5568;line-height:1.8;">
+      Please arrive at your scheduled time.<br>
+      If you get lost, feel free to contact us.
+    </p>
+
+    <p style="font-size:13px;color:#4a5568;line-height:1.8;">
+      Staff: Ishikawa<br>
+      080-8436-2412
     </p>
 
     <p style="font-size:12px;color:#94a3b8;margin-top:32px;">
-      Wuloong Studio TOKYO<br>
-      三軒茶屋・世田谷エリア · 完全予約制プライベートスタジオ
+      Wuloong Studio TOKYO · Sangenjaya, Setagaya, Tokyo
     </p>
   </div>
   `

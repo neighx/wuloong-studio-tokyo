@@ -259,7 +259,7 @@ export const t = {
       errorMsg: "エラーが発生しました。Instagramまたはメールからご連絡ください。",
       alertMissingDateTime: "日付と時間を選択してください",
       successTitle: "ご予約ありがとうございます",
-      successBody: "内容を確認後、メールまたはInstagram DMでご連絡いたします。\nしばらくお待ちください。",
+      successBody: "スタジオ所在地：東京都世田谷区上馬5-40-12 ラコルタ404\n\n当日はご予約時間にお越しください。\n道に迷われた場合はご連絡ください。\n\n担当 石川　080-8436-2412",
     },
     faqPage: {
       eyebrow: "FAQ",
@@ -736,8 +736,8 @@ export const t = {
       submit: "Submit Booking Request",
       errorMsg: "Something went wrong. Please reach out via Instagram or email instead.",
       alertMissingDateTime: "Please select a date and time",
-      successTitle: "Thanks for your booking request!",
-      successBody: "We'll review the details and get back to you by email or Instagram DM.\nPlease hold tight.",
+      successTitle: "Thanks for your booking!",
+      successBody: "Studio address: 5-40-12 Kamiuma, Setagaya-ku, Tokyo 154-0011 / Lacolta 404\n\nPlease arrive at your scheduled time.\nIf you get lost, feel free to contact us.\n\nStaff: Ishikawa　080-8436-2412",
     },
     faqPage: {
       eyebrow: "FAQ",
