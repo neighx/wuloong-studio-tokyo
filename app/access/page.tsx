@@ -4,6 +4,7 @@ import AccessPageContent from "@/components/AccessPageContent"
 export const metadata: Metadata = {
   title: "アクセス | Wuloong Studio TOKYO",
   description: "三軒茶屋・世田谷エリアの完全予約制プライベートレコーディングスタジオ。詳しい住所はご予約確定後にご案内します。",
+  alternates: { canonical: "/access" },
 }
 
 export default function AccessPage() {

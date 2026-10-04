@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
+import Script from "next/script"
 import { Dancing_Script, Cormorant_Garamond, Noto_Serif_JP } from "next/font/google"
 import "./globals.css"
 import SiteHeader from "@/components/SiteHeader"
 import SiteFooter from "@/components/SiteFooter"
 import MobileFixedCTA from "@/components/MobileFixedCTA"
-import { SEO } from "@/lib/constants"
+import { SEO, SITE_URL, INSTAGRAM_URL } from "@/lib/constants"
+import { GA_MEASUREMENT_ID } from "@/lib/analytics"
 import { LanguageProvider } from "@/contexts/LanguageContext"
 
 const dancingScript = Dancing_Script({
@@ -30,15 +32,18 @@ const notoSerifJP = Noto_Serif_JP({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: SEO.title,
   description: SEO.description,
   keywords: SEO.keywords,
+  alternates: { canonical: "/" },
   openGraph: {
     title: SEO.title,
     description: SEO.description,
     type: "website",
     locale: "ja_JP",
     siteName: "Wuloong Studio TOKYO",
+    url: "/",
   },
   robots: {
     index: true,
@@ -51,8 +56,8 @@ const jsonLd = {
   "@type": "LocalBusiness",
   "name": "Wuloong Studio TOKYO",
   "description": "三軒茶屋・世田谷の完全予約制プライベートレコーディングスタジオ。初めての録音から1曲完成まで丁寧にサポートします。",
-  "url": "https://wuloong.studio",
-  "image": "https://wuloong.studio/images/studio/studio-main.jpg",
+  "url": SITE_URL,
+  "image": `${SITE_URL}/images/studio/studio-main.jpg`,
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "三軒茶屋",
@@ -73,7 +78,7 @@ const jsonLd = {
       "closes": "23:00",
     },
   ],
-  "sameAs": ["https://www.instagram.com/wuloong.studio/"],
+  "sameAs": [INSTAGRAM_URL],
   "keywords": "レコーディングスタジオ,三軒茶屋,世田谷,ボーカル録音,HIPHOP,R&B,初心者,完全予約制",
 }
 
@@ -85,6 +90,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* NEXT_PUBLIC_GA_MEASUREMENT_ID が設定されていない限り、
+            このスクリプト自体を読み込まず、外部への送信は一切発生しない */}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body className="min-h-full flex flex-col">
         <LanguageProvider>

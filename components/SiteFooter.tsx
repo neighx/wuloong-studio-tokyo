@@ -97,7 +97,7 @@ export default function SiteFooter() {
             <Link href="/terms" className="text-xs text-white/40 hover:text-white/60 transition-colors">
               {T.terms}
             </Link>
-            <Link href="/contact" className="text-xs text-white/40 hover:text-white/60 transition-colors">
+            <Link href="/privacy" className="text-xs text-white/40 hover:text-white/60 transition-colors">
               {T.privacy}
             </Link>
           </div>

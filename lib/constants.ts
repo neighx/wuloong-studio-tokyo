@@ -4,6 +4,11 @@ export const INSTAGRAM_URL = "https://www.instagram.com/wuloongstudio"
 export const LINE_URL = ""
 export const BOOKING_CALENDAR_URL = "https://calendar.google.com/calendar"
 
+// 公開中の正規ドメイン。sitemap・robots・canonical・JSON-LDで共通参照する。
+// (.env.local の NEXT_PUBLIC_SITE_URL は Vercel の既定ドメインを指しており未使用のため、
+//  実際に公開されている独自ドメインをここで明示する)
+export const SITE_URL = "https://wuloong.jp"
+
 export const SEO = {
   title: "Wuloong Studio TOKYO｜三軒茶屋のプライベートレコーディングスタジオ",
   description:
