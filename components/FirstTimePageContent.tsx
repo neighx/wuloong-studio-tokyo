@@ -98,6 +98,7 @@ export default function FirstTimePageContent() {
               </div>
             ))}
           </div>
+          <p className="text-sm text-[#64748b] text-center mt-6 leading-relaxed">{T.checklistNote}</p>
         </div>
       </section>
 

@@ -5,7 +5,7 @@ import { INSTAGRAM_URL } from "@/lib/constants"
 
 export const metadata: Metadata = {
   title: "Wuloong Studio TOKYO — 三軒茶屋のプライベートスタジオ",
-  description: "三軒茶屋のプライベートレコーディングスタジオ。初回体験 ¥12,000〜。女性1人OK・初心者大歓迎・完全予約制。",
+  description: "三軒茶屋のプライベートレコーディングスタジオ。初回3時間12,000円（税込）。女性1人OK・初心者大歓迎・完全予約制。",
   robots: { index: false, follow: false },
 }
 
@@ -58,8 +58,8 @@ export default function InstagramLandingPage() {
 
           <div className="absolute bottom-5 left-5 right-5">
             <div className="px-4 py-3 rounded-xl" style={{ background: "rgba(8,9,13,0.75)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <p className="text-white/40 text-[10px] mb-0.5">STARTING FROM</p>
-              <p className="text-white font-black text-lg">初回体験 ¥12,000〜</p>
+              <p className="text-white/40 text-[10px] mb-0.5">FIRST SESSION</p>
+              <p className="text-white font-black text-lg">初回体験 3時間 ¥12,000（税込）</p>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function InstagramLandingPage() {
       <div className="px-6 mb-10 max-w-sm mx-auto">
         <div className="space-y-3">
           {[
-            { name: "初回体験", desc: "初めての録音・3時間", price: "¥12,000〜", color: "#6b9fd4", href: "/booking?plan=first-time-2h" },
+            { name: "初回体験", desc: "初めての録音・3時間", price: "¥12,000（税込）", color: "#6b9fd4", href: "/booking?plan=first-time-2h" },
             { name: "1曲完成パック", desc: "録音〜MIX〜マスタリング", price: "¥30,000〜", color: "#9b8ec4", href: "/booking?plan=song-package", featured: true },
             { name: "30日サポート", desc: "継続的なアーティスト活動", price: "¥50,000〜/30日", color: "#e8afc4", href: "/monthly-support" },
           ].map((plan) => (

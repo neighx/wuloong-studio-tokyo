@@ -49,6 +49,23 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
+              href="/first-time"
+              className="transition-opacity hover:opacity-80"
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#6b9fd4",
+                padding: "12px 27px",
+                borderRadius: "9999px",
+                border: "1px solid rgba(107,159,212,0.4)",
+                display: "inline-block",
+              }}
+            >
+              {T.btnFirstTime}
+            </Link>
+            <Link
               href="#calendar-section"
               className="text-white transition-opacity hover:opacity-80"
               style={{

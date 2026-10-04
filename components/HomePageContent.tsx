@@ -89,7 +89,8 @@ export default function HomePageContent() {
                 <div className="text-3xl mb-4">🎙️</div>
                 <h3 className="font-bold text-white text-lg mb-2">{T.firstTime.cardTitle}</h3>
                 <p className="text-sm text-white/55 leading-relaxed mb-5">{T.firstTime.cardDesc}</p>
-                <p className="text-3xl font-black mb-5" style={{ color: "#7eb8e8" }}>¥12,000〜</p>
+                <p className="text-3xl font-black mb-1" style={{ color: "#7eb8e8" }}>¥12,000<span className="text-sm font-normal text-white/50">（税込）</span></p>
+                <p className="text-xs text-white/40 mb-5">3時間・MIX/マスタリングは別料金</p>
                 <ul className="space-y-2 mb-6">
                   {T.firstTime.cardFeatures.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-white/55">

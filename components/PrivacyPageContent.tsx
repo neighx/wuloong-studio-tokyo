@@ -7,8 +7,6 @@ const content = {
     eyebrow: "PRIVACY POLICY",
     title: "プライバシーポリシー",
     lastUpdated: "最終更新日：2026年10月4日",
-    draftNotice:
-      "このページは、現在のサイトの実装内容（予約フォーム・お問い合わせフォーム・使用している外部サービス）に基づいて作成した下書きです。保存期間や契約条件など、運営者による最終確認が済んでいない項目を含みます。正式な内容が確定するまでの参考情報としてご利用ください。",
     sections: [
       {
         title: "取得する情報",
@@ -65,8 +63,6 @@ const content = {
     eyebrow: "PRIVACY POLICY",
     title: "Privacy Policy",
     lastUpdated: "Last updated: October 4, 2026",
-    draftNotice:
-      "This page is a draft based on the site's current implementation (the booking form, contact form, and the external services in use). Some items, such as data retention periods and contractual terms, have not yet been finalized by the studio operator. Please treat this as reference information until a final version is confirmed.",
     sections: [
       {
         title: "Information We Collect",
@@ -142,13 +138,6 @@ export default function PrivacyPageContent() {
             {T.title}
           </h1>
           <p className="text-[#94a3b8] text-xs">{T.lastUpdated}</p>
-        </div>
-
-        <div
-          className="rounded-2xl p-6 sm:p-8 mb-12"
-          style={{ background: "linear-gradient(155deg, #fff8ec 0%, #fff0f0 100%)", border: "1px solid rgba(230,160,100,0.2)" }}
-        >
-          <p className="text-sm text-[#4a5568] leading-[1.95]">{T.draftNotice}</p>
         </div>
 
         <div className="space-y-10">
