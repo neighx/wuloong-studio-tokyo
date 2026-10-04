@@ -3,6 +3,8 @@
 import Link from "next/link"
 import CTASection from "@/components/CTASection"
 import FAQ from "@/components/FAQ"
+import PlanGuide from "@/components/PlanGuide"
+import FirstTimeKeyFacts from "@/components/FirstTimeKeyFacts"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
@@ -41,6 +43,8 @@ export default function FirstTimePageContent() {
         </div>
       </section>
 
+      <FirstTimeKeyFacts />
+
       {/* Flow */}
       <section className="py-16 px-4 sm:px-6 bg-gradient-to-br from-[#f8f6ff] to-[#f0f4ff]">
         <div className="max-w-3xl mx-auto">
@@ -68,6 +72,14 @@ export default function FirstTimePageContent() {
           </div>
         </div>
       </section>
+
+      {/* PLAN_GUIDE_PROTOTYPE START — 取り外す場合はこのsectionとPlanGuideコンポーネントを削除 */}
+      <section className="py-16 px-4 sm:px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <PlanGuide />
+        </div>
+      </section>
+      {/* PLAN_GUIDE_PROTOTYPE END */}
 
       {/* Checklist */}
       <section className="py-16 px-4 sm:px-6 bg-white">

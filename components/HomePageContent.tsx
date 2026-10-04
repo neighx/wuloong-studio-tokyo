@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ"
 import CTASection from "@/components/CTASection"
 import BookingCalendar from "@/components/BookingCalendar"
 import { INSTAGRAM_URL, LINE_URL } from "@/lib/constants"
+import { track } from "@/lib/analytics"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
@@ -180,6 +181,7 @@ export default function HomePageContent() {
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => track("consult_click", { location: "home_booking_reassurance" })}
               className="inline-block text-[#6b9fd4] text-xs font-semibold border border-[#6b9fd4]/30 rounded-full px-5 py-2 hover:bg-[#6b9fd4]/5 transition-colors"
             >
               {T.bookingReassurance.btnInstagram}
@@ -187,6 +189,7 @@ export default function HomePageContent() {
           </div>
 
           <BookingCalendar
+            planId="first-time-2h"
             onSelectDateTime={(date, time) => {
               setPickedDate(date)
               setPickedTime(time)
