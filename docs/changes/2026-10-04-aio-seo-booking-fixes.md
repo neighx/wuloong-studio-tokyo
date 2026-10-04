@@ -187,3 +187,31 @@ Vercelへデプロイした場合に有効になる変更：
   - テストフラグ未設定時の通常動作（APIレスポンス・全ページ表示）に影響がないことを再確認。
 - 見つかった問題：なし（既存の設計が想定通り動作することを確認。修正は防御強化のみ）。
 - Vercel Production環境変数の確認（値は非表示、名前のみ）：`GOOGLE_CLIENT_ID`・`GOOGLE_CLIENT_SECRET`・`GOOGLE_REFRESH_TOKEN`・`GOOGLE_CALENDAR_ID`・`GMAIL_USER`・`GMAIL_APP_PASSWORD`・`ADMIN_EMAIL`・`NEXT_PUBLIC_SITE_URL`が設定済み。live運用に必要な既存変数の不足なし。テスト専用フラグ（`ALLOW_TEST_INTEGRATION`等）はProductionに設定されておらず、これは正しい状態。
+
+## 9. 本番公開（2026-10-04）
+
+**公開日時（JST）**：2026-10-04 15:50:23（Vercel production deployment created time）
+**対象コミット**：`040e07a316a427a672ebbd07edceeea9ec649d79`（"Add booking-duration audit script and operational docs"。このコミットまでの4コミット一式を公開）
+**公開URL**：https://wuloong.jp （Vercel deployment: `https://wuloong-studio-tokyo-iit2h8b8r-neighxs-projects.vercel.app` / id `dpl_81uvuVBSF9KGEzJ2ubQidT35aRJN`）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-5ed5h9xf9-neighxs-projects.vercel.app`（id `dpl_CwXyhrSrfd9P9C2t9PqHRGbuJHCA`、commit `595a2b1508425b3e5e21fe1c67b13936ae7d9a40`、2026-07-04 10:42:02 JST作成）。切り戻しが必要な場合は `vercel rollback https://wuloong-studio-tokyo-5ed5h9xf9-neighxs-projects.vercel.app` を使う。
+
+**デプロイ手順**：既存のGitHub連携（`git push origin main`）によるVercelの通常の自動ビルド・デプロイ。新しいデプロイ用スクリプト等は追加していない。
+
+**公開後の確認結果（すべて読み取り操作。本番へのテスト予約・テスト登録・実メール送信は行っていない）**：
+
+| 確認項目 | 結果 |
+| --- | --- |
+| トップ・予約ページの初期HTMLの月表示 | JST基準で「2026年10月」（確認時点のJSTの月）と一致 |
+| 予約フォームの「スタッフ確認後に確定」表示 | 「送信後、内容と空き状況をスタジオが確認し、確定のご連絡をいたします。この時点では予約は確定しておりません。」を確認 |
+| 初心者ページ・FAQページの表示 | 両方200。FAQ回答本文が初期HTML（クリック前）に存在することを確認 |
+| canonical / JSON-LD / robots.txt / sitemap.xml | いずれも`https://wuloong.jp`に統一されていることを確認（JSON-LDのurl/sameAsも含む） |
+| 空き状況API（正しいplanId） | `durationHours:3`で正常応答。不正な入力は「空きなし」ではなく明示的な400エラーを返す |
+| 本番の外部連携モード | **live**で動作していることを確認。読み取り専用で実カレンダーの既存予定（他システム作成、個人情報は取得・記録していない）の時間帯のみを取得し、同じ日時を公開APIに問い合わせたところ、その時間帯だけが正しくBUSYとして返ることを確認（mockであれば起こり得ない結果）。秘密値は一切出力していない |
+
+**重大な起動・表示不具合**：なし。切り戻しは行っていない。
+
+**未確認事項（今回確認していないこと）**：
+- 実際の予約フォーム送信（カレンダー登録・確認メール送信）は、本番では一度も行っていない。読み取り確認のみで、送信フローそのものの本番動作は未確認。
+- GA4計測は測定ID未設定のため非アクティブ（想定通り）。
+- プライバシーポリシー・キャンセル条件の最終的な運用確認は別途ユーザー側で完了済みの前提だが、本番ページの表示文言と運用の一致はこちらでは判断できない。
+- モバイル実機・各ブラウザでの表示は未確認（レスポンス内容のみの確認）。
