@@ -215,3 +215,33 @@ Vercelへデプロイした場合に有効になる変更：
 - GA4計測は測定ID未設定のため非アクティブ（想定通り）。
 - プライバシーポリシー・キャンセル条件の最終的な運用確認は別途ユーザー側で完了済みの前提だが、本番ページの表示文言と運用の一致はこちらでは判断できない。
 - モバイル実機・各ブラウザでの表示は未確認（レスポンス内容のみの確認）。
+
+## 10. 本番公開（2026-10-04 23:33 JST）— 料金・歌詞案内・プライバシー表記の修正
+
+**公開日時（JST）**：2026-10-04 23:33:48（Vercel production deployment created time）
+**対象コミット**：`d5b52ed`（"Fix pricing, lyrics, and messaging inconsistencies on the public site"）
+**公開URL**：https://wuloong.jp （Vercel deployment: `https://wuloong-studio-tokyo-ozbackqmp-neighxs-projects.vercel.app` / id `dpl_DNskfSn1PfwrHMrzS3pw8WVqa1di`）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-k7dbl5t0h-neighxs-projects.vercel.app`（commit `ee17f24`）。`vercel rollback https://wuloong-studio-tokyo-k7dbl5t0h-neighxs-projects.vercel.app` で戻せる。
+
+**デプロイ手順**：前回までと同じ、GitHub連携（`git push origin main`）によるVercelの通常の自動ビルド・デプロイ。
+
+**内容**：初回料金「12,000円（税込・3時間）」への統一とMIX/マスター別料金の明示、歌詞任意の案内統一、トップのHero文言修正（誤解回避・導線追加）、キャンセル条件の無断キャンセル100%復元、LINE案内の削除、担当者（石川）の役割記載、プライバシーポリシーの「下書き」表記削除。詳細はコミットメッセージおよび本会話の直前のやり取りを参照。
+
+**公開後の確認結果（すべて読み取り操作。本番へのテスト予約・登録・送信は行っていない）**：
+
+| 確認項目 | 結果 |
+| --- | --- |
+| トップHeroの価格・ジャンル・導線 | 「三軒茶屋のボーカルレコーディングスタジオ」「初回3時間12,000円（税込）」「初めての方へ」を確認 |
+| 価格カードのMIX別料金表記 | 「3時間・MIX/マスタリングは別料金」を確認 |
+| `/first-time` title | 「初めてのレコーディング｜三軒茶屋・3時間12,000円｜Wuloong Studio TOKYO」を確認 |
+| `/first-time` 歌詞任意の注記 | 初期HTMLに3箇所（チェックリスト・Key Facts・安全ポイント）出力を確認 |
+| `/pricing` に「必須」の表記が無いこと | 確認（該当なし） |
+| `/privacy` に「下書き」の表記が無いこと | 確認（削除済み） |
+| 主要ページ（/、/booking、/faq、/pricing、/terms、/privacy、/contact、/first-time） | すべて200 |
+
+**重大な起動・表示不具合**：なし。切り戻しは行っていない。
+
+**未確認事項**：
+- 石川氏の役割表記・プライバシーポリシーの保存期間/契約条件は、運営者確認済み（2026-10-04のやり取りで確認済み）。
+- モバイル実機でのスクリーンショット確認はローカル環境（ローカルにインストールしたPlaywright、mockモード）で実施済みだが、本番URLそのものでの実機確認は未実施。
+- GA4計測は引き続き測定ID未設定のため非アクティブ。
