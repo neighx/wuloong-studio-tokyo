@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { INSTAGRAM_URL } from "@/lib/constants"
+import { track } from "@/lib/analytics"
+import { getPlanById, type PlanId } from "@/lib/pricing"
+import { toJSTWallClock, getJSTDateString } from "@/lib/datetime"
 
 interface TimeSlot {
   time: string
@@ -12,15 +16,21 @@ interface BookingCalendarProps {
   onSelectDateTime?: (date: string, time: string) => void
   selectedDate?: string
   selectedTime?: string
+  /** 空き状況の判定に使う所要時間の基準となるプラン（省略時は初回体験プラン） */
+  planId?: PlanId
 }
 
-export default function BookingCalendar({ onSelectDateTime, selectedDate, selectedTime }: BookingCalendarProps) {
-  const today = new Date()
-  const [currentMonth, setCurrentMonth] = useState(today)
+export default function BookingCalendar({ onSelectDateTime, selectedDate, selectedTime, planId }: BookingCalendarProps) {
+  // サーバー（既定UTC）と閲覧端末のタイムゾーンが異なっても、
+  // 営業時間はJSTの壁時計時刻で揃える
+  const [currentMonth, setCurrentMonth] = useState(() => toJSTWallClock())
+  const durationHours = getPlanById(planId ?? "first-time-2h")?.durationHours ?? 3
   const [internalDate, setInternalDate] = useState(selectedDate ?? "")
   const [internalTime, setInternalTime] = useState(selectedTime ?? "")
   const [slots, setSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
 
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -33,11 +43,20 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
 
   useEffect(() => {
     if (!internalDate) return
+    let cancelled = false
     setLoading(true)
+    setError(false)
     setSlots([])
-    fetch(`/api/availability?date=${internalDate}`)
-      .then((res) => res.json())
+
+    fetch(`/api/availability?date=${internalDate}&planId=${encodeURIComponent(planId ?? "first-time-2h")}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`availability request failed: ${res.status}`)
+        return res.json()
+      })
       .then((data) => {
+        // 日付を素早く切り替えた場合、古いリクエストの遅い応答が
+        // 新しい日付の表示を上書きしないようにする
+        if (cancelled) return
         const parsed: TimeSlot[] = (data.slots ?? []).map((s: { start: string; available: boolean }) => {
           const hour = new Date(s.start).toLocaleTimeString("ja-JP", {
             hour: "2-digit",
@@ -49,9 +68,20 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
         })
         setSlots(parsed)
       })
-      .catch(() => setSlots([]))
-      .finally(() => setLoading(false))
-  }, [internalDate])
+      .catch(() => {
+        if (cancelled) return
+        setError(true)
+        track("availability_error", { plan_id: planId ?? "first-time-2h" })
+      })
+      .finally(() => {
+        if (cancelled) return
+        setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [internalDate, reloadKey, planId])
 
   const handleDateClick = (day: number) => {
     const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
@@ -64,12 +94,10 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
     if (onSelectDateTime) onSelectDateTime(internalDate, time)
   }
 
+  const todayJST = getJSTDateString()
   const isPast = (day: number) => {
-    const d = new Date(year, month, day)
-    d.setHours(0, 0, 0, 0)
-    const t = new Date()
-    t.setHours(0, 0, 0, 0)
-    return d < t
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+    return dateStr < todayJST
   }
 
   const monthLabel = currentMonth.toLocaleDateString("ja-JP", { year: "numeric", month: "long" })
@@ -145,7 +173,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
       {/* Time slots */}
       {internalDate && (
         <div className="glass-card rounded-3xl p-5 sm:p-6">
-          <p className="text-sm font-semibold text-[#1a1a2e] mb-4">
+          <p className="text-sm font-semibold text-[#1a1a2e] mb-1">
             {new Date(internalDate + "T12:00:00").toLocaleDateString("ja-JP", {
               month: "long",
               day: "numeric",
@@ -153,11 +181,38 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
             })}
             　の空き時間
           </p>
+          <p className="text-xs text-[#94a3b8] mb-4">
+            表示時刻はすべて日本時間（Asia/Tokyo）・{durationHours}時間利用の枠です
+          </p>
 
           {loading ? (
             <p className="text-sm text-[#94a3b8] text-center py-6">読み込み中...</p>
+          ) : error ? (
+            <div className="text-center py-6">
+              <p className="text-sm text-[#64748b] mb-4">
+                空き状況を取得できませんでした。再試行するか、日程をご相談ください。
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setReloadKey((k) => k + 1)}
+                  className="text-sm font-semibold text-[#6b9fd4] border border-[#6b9fd4]/40 rounded-full px-5 py-2 hover:bg-[#6b9fd4]/5 transition-colors"
+                >
+                  再試行する
+                </button>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => track("consult_click", { location: "booking_calendar_error" })}
+                  className="text-sm font-semibold text-[#6b9fd4] hover:underline"
+                >
+                  Instagramで相談する
+                </a>
+              </div>
+            </div>
           ) : slots.length === 0 ? (
-            <p className="text-sm text-[#94a3b8] text-center py-6">空き枠がありません</p>
+            <p className="text-sm text-[#94a3b8] text-center py-6">この日は受付時間の設定がありません</p>
           ) : availableSlots.length === 0 ? (
             <p className="text-sm text-[#94a3b8] text-center py-6">
               この日はすべて予約済みです

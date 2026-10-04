@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, FormEvent } from "react"
-import { PLANS } from "@/lib/pricing"
+import { useState, useRef, FormEvent } from "react"
+import { PLANS, type PlanId } from "@/lib/pricing"
 import BookingCalendar from "@/components/BookingCalendar"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
+import { track } from "@/lib/analytics"
 
-type FormState = "idle" | "submitting" | "success" | "error"
+type FormState = "idle" | "submitting" | "success" | "error" | "conflict"
 
 export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: { defaultPlan?: string; defaultDate?: string; defaultTime?: string }) {
   const { lang } = useLang()
@@ -16,6 +17,10 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
   const [selectedDate, setSelectedDate] = useState(defaultDate ?? "")
   const [selectedTime, setSelectedTime] = useState(defaultTime ?? "")
   const [formState, setFormState] = useState<FormState>("idle")
+  const [receiptNumber, setReceiptNumber] = useState("")
+  // プラン変更に加えて、時間重複(409)が起きた際にもカレンダーを再マウントして
+  // 最新の空き状況を取り直すためのキー
+  const [calendarResetKey, setCalendarResetKey] = useState(0)
   const [form, setForm] = useState({
     planId: defaultPlan ?? "first-time-2h",
     name: "",
@@ -27,6 +32,23 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
   })
 
   const selectedPlan = PLANS.find((p) => p.id === form.planId)
+  const submittingRef = useRef(false)
+  const bookingStartedRef = useRef(false)
+
+  // 同じ日時への送信操作をもう一度行った場合に、サーバー側で
+  // 「同じ予約の再送」と判定できるようにするキー。
+  // 選択中の日時が変わった時だけ新しく発行し、通信エラー等での
+  // 単純な再送（日時は変えていない）では同じキーを使い続ける。
+  const idempotencySlotRef = useRef("")
+  const idempotencyKeyRef = useRef("")
+  const currentSlot = `${selectedDate}|${selectedTime}`
+  if (idempotencySlotRef.current !== currentSlot) {
+    idempotencySlotRef.current = currentSlot
+    idempotencyKeyRef.current =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -34,6 +56,18 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       setForm((prev) => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }))
     } else {
       setForm((prev) => ({ ...prev, [name]: value }))
+      // プラン変更で所要時間や空き状況が変わる可能性があるため、
+      // 選択済みの日時は一度解除し、送信前に必ず選び直してもらう
+      if (name === "planId") {
+        setSelectedDate("")
+        setSelectedTime("")
+        track("plan_select", { plan_id: value })
+      }
+      // 氏名・メール等は送信しない。「入力を始めた」ことのみ1回だけ計測する
+      if (!bookingStartedRef.current && ["name", "email", "phone"].includes(name) && value) {
+        bookingStartedRef.current = true
+        track("booking_start", { plan_id: form.planId })
+      }
     }
   }
 
@@ -43,6 +77,8 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       alert(TF.alertMissingDateTime)
       return
     }
+    if (submittingRef.current) return
+    submittingRef.current = true
 
     setFormState("submitting")
     try {
@@ -58,23 +94,55 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
           customerEmail: form.email,
           customerPhone: form.phone,
           customerInstagram: form.instagram,
+          idempotencyKey: idempotencyKeyRef.current,
         }),
       })
+      if (res.status === 409) {
+        setFormState("conflict")
+        setSelectedTime("")
+        setCalendarResetKey((k) => k + 1)
+        submittingRef.current = false
+        track("booking_submit_error", { plan_id: form.planId, error_type: "conflict" })
+        return
+      }
       if (!res.ok) throw new Error("API error")
+      const data = await res.json()
+      setReceiptNumber(data.receiptNumber ?? "")
       setFormState("success")
+      // status: "pending_confirmation" ＝ APIが申込を受理したことのみを示す。
+      // スタジオによる予約確定とは別（HTTP成功＝確定ではない）。
+      track("booking_submit_success", { plan_id: form.planId })
     } catch {
       setFormState("error")
+      submittingRef.current = false
+      track("booking_submit_error", { plan_id: form.planId, error_type: "network_or_server" })
     }
   }
 
   if (formState === "success") {
     return (
       <div className="glass-card rounded-3xl p-10 text-center">
-        <div className="text-5xl mb-4">🎉</div>
+        <div className="text-5xl mb-4">📩</div>
         <h3 className="text-xl font-bold text-[#1a1a2e] mb-3">{TF.successTitle}</h3>
-        <p className="text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>
+        <p className="text-[#64748b] leading-relaxed mb-6" style={{ whiteSpace: "pre-line" }}>
           {TF.successBody}
         </p>
+        <div className="text-left max-w-sm mx-auto rounded-2xl bg-[#f8f9ff] p-5 space-y-2">
+          {receiptNumber && (
+            <p className="text-sm text-[#1a1a2e]">
+              <span className="text-[#94a3b8]">{TF.receiptLabel}：</span>
+              <span className="font-bold">{receiptNumber}</span>
+            </p>
+          )}
+          <p className="text-sm text-[#1a1a2e]">
+            <span className="text-[#94a3b8]">{TF.planLabel}：</span>
+            <span className="font-bold">{selectedPlan?.name ?? form.planId}</span>
+          </p>
+          <p className="text-sm text-[#1a1a2e]">
+            <span className="text-[#94a3b8]">{TF.requestedDateTimeLabel}：</span>
+            <span className="font-bold">{selectedDate} {selectedTime}〜</span>
+          </p>
+        </div>
       </div>
     )
   }
@@ -125,6 +193,10 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       <div>
         <p className="text-sm font-semibold text-[#1a1a2e] mb-3">{TF.selectDateTime}</p>
         <BookingCalendar
+          // BookingCalendarは内部でも日付/時間を保持するため、プラン変更時に
+          // key を変えて再マウントし、古い選択状態が残らないようにする
+          key={`${form.planId}-${calendarResetKey}`}
+          planId={form.planId as PlanId}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
           onSelectDateTime={(date, time) => {
@@ -206,6 +278,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       </div>
 
       {/* Submit */}
+      <p className="text-xs text-[#94a3b8] text-center">{TF.preSubmitNotice}</p>
       <button
         type="submit"
         disabled={formState === "submitting"}
@@ -217,6 +290,12 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       {formState === "error" && (
         <p className="text-center text-red-500 text-sm">
           {TF.errorMsg}
+        </p>
+      )}
+
+      {formState === "conflict" && (
+        <p className="text-center text-red-500 text-sm">
+          {TF.conflictMsg}
         </p>
       )}
     </form>

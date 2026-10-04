@@ -193,7 +193,7 @@ export const t = {
       },
       {
         q: "キャンセルはできますか？",
-        a: "前日18時までのキャンセルは無料です。当日キャンセルはキャンセル料5,000円が発生します。ご了承ください。",
+        a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
       },
       {
         q: "持ち物は何が必要ですか？",
@@ -224,7 +224,7 @@ export const t = {
         "料金はすべて税込みです",
         "1曲完成パックは内容により価格が変動する場合があります",
         "30日サポートの詳細はお問い合わせください",
-        "キャンセルポリシー：前日までのキャンセルは無料。当日キャンセルは料金の50%をいただく場合があります",
+        "キャンセルポリシー：前日18時までのキャンセルは無料。当日のキャンセルはキャンセル料50%をいただきます",
       ],
       btnBook: "予約する",
       btnConsult: "料金について相談する",
@@ -254,12 +254,18 @@ export const t = {
       message: "内容・相談したいこと",
       messagePlaceholder: "録音したい曲のジャンル、参考アーティスト、ご不明な点など、お気軽にお書きください。",
       firstTimeCheckbox: "Wuloong Studio TOKYOへの初回利用です",
+      preSubmitNotice: "送信後、内容と空き状況をスタジオが確認し、確定のご連絡をいたします。この時点では予約は確定しておりません。",
       submitting: "送信中...",
       submit: "予約を申し込む",
       errorMsg: "エラーが発生しました。Instagramまたはメールからご連絡ください。",
+      conflictMsg: "その時間帯は他のお申し込みが入っています。お手数ですが、別の時間をお選びください。",
       alertMissingDateTime: "日付と時間を選択してください",
-      successTitle: "ご予約ありがとうございます",
-      successBody: "スタジオ所在地：東京都世田谷区上馬5-40-12 ラコルタ404\n\n当日はご予約時間にお越しください。\n道に迷われた場合はご連絡ください。\n\n担当 石川　080-8436-2412",
+      successTitle: "申込受付",
+      successBody:
+        "予約のお申し込みを受け付けました。現在は未確定です。内容と空き状況を確認後、スタジオから確定のご連絡をします。ご希望の日時を確保できない場合は、別日程をご相談します。",
+      receiptLabel: "受付番号",
+      planLabel: "プラン",
+      requestedDateTimeLabel: "希望日時（日本時間）",
     },
     faqPage: {
       eyebrow: "FAQ",
@@ -292,7 +298,7 @@ export const t = {
         },
         {
           q: "キャンセルはできますか？",
-          a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料5,000円をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は5,000円を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
+          a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
         },
         {
           q: "録音した音源のデータはもらえますか？",
@@ -370,6 +376,98 @@ export const t = {
       ctaSubtitle: "初回体験は3時間12,000円から。準備ゼロでも大丈夫です。",
       btnBook: "初回体験を予約する",
       btnConsult: "まずは相談する",
+    },
+    planGuide: {
+      eyebrow: "PLAN GUIDE",
+      title: "どのプランが合うか、3つの質問で確認",
+      subtitle: "かんたんな質問に答えると、今のあなたに合うプランの料金と準備がわかります。",
+      stepLabel: "質問",
+      stepOf: "/ 3",
+      questions: [
+        {
+          label: "まず何をしたいですか？",
+          options: [
+            { value: "record", label: "まず録音してみたい" },
+            { value: "song", label: "1曲を仕上げたい" },
+            { value: "ongoing", label: "継続して制作したい" },
+          ],
+        },
+        {
+          label: "今、歌詞や音源はどのくらい準備できていますか？",
+          options: [
+            { value: "ready", label: "歌詞と音源がある" },
+            { value: "partial", label: "一部だけある" },
+            { value: "none", label: "準備から相談したい" },
+          ],
+        },
+        {
+          label: "次に何をしたいですか？",
+          options: [
+            { value: "datetime", label: "日時を選びたい" },
+            { value: "consult", label: "内容・料金を先に相談したい" },
+          ],
+        },
+      ],
+      btnBack: "戻る",
+      btnRestart: "もう一度答える",
+      resultConsultTitle: "まずはご相談から",
+      resultConsultBody: "準備の段階からご相談いただけます。歌詞や音源のアップロードは不要です。お気軽にメッセージください。",
+      resultPlanTitle: "こちらのプランが近そうです",
+      resultPlanNote: "料金・内容は予約ページと同じ情報です。",
+      btnBookPlan: "このプランで空き時間を見る",
+      btnConsult: "まずは相談する",
+      btnPricing: "料金ページで比較する",
+      skipNote: "診断を使わなくても、料金ページや予約フォームから直接進めます。",
+    },
+    firstTimeFacts: {
+      title: "予約前に知っておきたいこと",
+      subtitle: "よくいただく質問に、クリックせず読める形でまとめました。",
+      compare: {
+        firstLabel: "FIRST SESSION",
+        firstNote: "MIX・マスタリングは含まれません。録音データのみのお渡しです。",
+        songLabel: "SONG PACKAGE",
+        songNote: "録音からMIX・マスタリングまで含みます。",
+      },
+      qa: [
+        {
+          q: "初めてスタジオで録音する場合、総額はいくらですか？",
+          a: "初回レコーディング体験は3時間12,000円（税込）です。料金はすべて税込み表示です。",
+        },
+        {
+          q: "3時間で何ができますか？",
+          a: "1曲をしっかり録音できます。内容や録り直しの回数によって調整も可能です。",
+        },
+        {
+          q: "歌詞やビート、スマホのデモはどう準備すればいいですか？",
+          a: "歌詞（印刷またはスマホ）は必須です。ビート音源（YouTube URLやファイルでOK）、参考にしたいアーティストや曲名があるとスムーズです。スマホのデモ音源でも大丈夫です。",
+        },
+        {
+          q: "録音だけのプランと、MIX・マスタリング込みのプランの違いは何ですか？",
+          a: "初回レコーディング体験は録音のみで、データはWAV形式でお渡しします。1曲完成パック（¥30,000〜）はボーカル編集・MIX・マスタリングまで含み、修正2回まで対応します。",
+        },
+        {
+          q: "当日は誰が録音をサポートしてくれますか？",
+          a: "スタジオのエンジニアが、録音の進め方から一緒に確認しながらサポートします。",
+        },
+        {
+          q: "データはどのように受け取れますか？",
+          a: "録音データはWAV形式でお渡しします。MIX・マスタリングまで含むプランでは、完成した音源をご提供します。",
+        },
+        {
+          q: "友人と一緒に行っても大丈夫ですか？女性1人でも利用できますか？",
+          a: "友人との同行も可能です（人数には上限があるため事前にご相談ください）。完全予約制のプライベートスタジオのため、女性1人でも安心してご利用いただけます。",
+        },
+        {
+          q: "支払い方法は何がありますか？",
+          a: "当日現金払い、各種カード払いに対応しています。",
+        },
+        {
+          q: "キャンセルはできますか？",
+          a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
+        },
+      ],
+      btnPricing: "料金ページで比較する",
+      btnBook: "初回体験を予約する",
     },
     monthlySupportPage: {
       eyebrow: "MONTHLY SUPPORT",
@@ -671,7 +769,7 @@ export const t = {
       },
       {
         q: "Can I cancel?",
-        a: "Free up to 6 pm the day before. Same-day cancellations incur a ¥5,000 fee. We appreciate your understanding.",
+        a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee. We appreciate your understanding. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
       },
       {
         q: "What should I bring?",
@@ -702,7 +800,7 @@ export const t = {
         "All prices include tax",
         "Song Package pricing may vary depending on the scope of work",
         "Contact us for details on the 30-Day Support plan",
-        "Cancellation policy: free up to the day before. Same-day cancellations may incur a 50% fee",
+        "Cancellation policy: free up to 6pm the day before. Same-day cancellations incur a 50% fee",
       ],
       btnBook: "Book Now",
       btnConsult: "Ask About Pricing",
@@ -732,12 +830,18 @@ export const t = {
       message: "Anything you'd like to share",
       messagePlaceholder: "Genre, reference artists, questions — anything helps us prepare.",
       firstTimeCheckbox: "This is my first time at Wuloong Studio TOKYO",
+      preSubmitNotice: "After you submit, the studio will check your request and availability, then contact you to confirm. This is not yet a confirmed booking.",
       submitting: "Submitting...",
-      submit: "Submit Booking Request",
+      submit: "Submit Booking Application",
       errorMsg: "Something went wrong. Please reach out via Instagram or email instead.",
+      conflictMsg: "That time slot already has another application. Please choose a different time.",
       alertMissingDateTime: "Please select a date and time",
-      successTitle: "Thanks for your booking!",
-      successBody: "Studio address: 5-40-12 Kamiuma, Setagaya-ku, Tokyo 154-0011 / Lacolta 404\n\nPlease arrive at your scheduled time.\nIf you get lost, feel free to contact us.\n\nStaff: Ishikawa　080-8436-2412",
+      successTitle: "Application Received",
+      successBody:
+        "We've received your booking application. This is not yet confirmed. We'll check the details and availability, then contact you from the studio to confirm. If we can't accommodate your requested time, we'll suggest alternative dates.",
+      receiptLabel: "Receipt Number",
+      planLabel: "Plan",
+      requestedDateTimeLabel: "Requested Date & Time (Japan time)",
     },
     faqPage: {
       eyebrow: "FAQ",
@@ -770,7 +874,7 @@ export const t = {
         },
         {
           q: "Can I cancel?",
-          a: "Cancellations are accepted up to 6 pm the day before your session. Due to engineer scheduling, same-day cancellations incur a ¥5,000 fee. If you paid by credit card, we'll deduct ¥5,000 and refund the remainder. We appreciate your understanding.",
+          a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee. We appreciate your understanding. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
         },
         {
           q: "Will I get the recording files?",
@@ -848,6 +952,98 @@ export const t = {
       ctaSubtitle: "First sessions start at ¥12,000 for 3 hours. Come as you are — zero prep required.",
       btnBook: "Book Your First Session",
       btnConsult: "Just Ask a Question First",
+    },
+    planGuide: {
+      eyebrow: "PLAN GUIDE",
+      title: "Find your plan in 3 questions",
+      subtitle: "Answer a few quick questions and we'll show you the plan, price, and prep that fits where you're at.",
+      stepLabel: "Question",
+      stepOf: "/ 3",
+      questions: [
+        {
+          label: "What do you want to do first?",
+          options: [
+            { value: "record", label: "Just try recording" },
+            { value: "song", label: "Finish one song" },
+            { value: "ongoing", label: "Keep making music regularly" },
+          ],
+        },
+        {
+          label: "How ready are your lyrics and backing track?",
+          options: [
+            { value: "ready", label: "I have lyrics and a track" },
+            { value: "partial", label: "I have some of it" },
+            { value: "none", label: "I need to talk through prep first" },
+          ],
+        },
+        {
+          label: "What would you like to do next?",
+          options: [
+            { value: "datetime", label: "Pick a date & time" },
+            { value: "consult", label: "Ask about details & pricing first" },
+          ],
+        },
+      ],
+      btnBack: "Back",
+      btnRestart: "Start Over",
+      resultConsultTitle: "Let's start with a quick chat",
+      resultConsultBody: "You can reach out even before your prep is ready. No need to upload lyrics or tracks — just send us a message.",
+      resultPlanTitle: "This plan looks like a good fit",
+      resultPlanNote: "Pricing and details match the booking page exactly.",
+      btnBookPlan: "Check availability for this plan",
+      btnConsult: "Ask a Question First",
+      btnPricing: "Compare plans on the Pricing page",
+      skipNote: "You don't need to use this guide — you can go straight to the pricing page or booking form anytime.",
+    },
+    firstTimeFacts: {
+      title: "What to know before you book",
+      subtitle: "Answers to common questions, written out so you can read them without clicking anything.",
+      compare: {
+        firstLabel: "FIRST SESSION",
+        firstNote: "Does not include mixing or mastering. You receive the raw recording only.",
+        songLabel: "SONG PACKAGE",
+        songNote: "Includes everything from recording through mixing and mastering.",
+      },
+      qa: [
+        {
+          q: "What's the total cost for a first-time session?",
+          a: "The First Recording Session is ¥12,000 for 3 hours, tax included. All prices on this site include tax.",
+        },
+        {
+          q: "What can I get done in 3 hours?",
+          a: "Most people comfortably finish recording one full song. We can adjust the pace depending on the song and how many takes you need.",
+        },
+        {
+          q: "How should I prepare lyrics, a beat, or a phone demo?",
+          a: "Lyrics (printed or on your phone) are required. A backing track (a YouTube link or file works) and reference artists or songs help a lot. A rough demo on your phone is fine too.",
+        },
+        {
+          q: "What's the difference between recording-only and a plan that includes mixing/mastering?",
+          a: "The First Recording Session is recording only, delivered as a WAV file. The Song Package (from ¥30,000) adds vocal editing and full mixing/mastering, with up to 2 rounds of revisions.",
+        },
+        {
+          q: "Who supports me on the day?",
+          a: "The studio's engineer walks you through the recording process and checks in with you the whole way.",
+        },
+        {
+          q: "How do I receive my files?",
+          a: "Recordings are delivered in WAV format. If your plan includes mixing and mastering, you'll receive the finished track as well.",
+        },
+        {
+          q: "Can I bring a friend? Is it safe for a woman coming alone?",
+          a: "Yes, you can bring a friend (there's a cap on group size, so please check with us first). This is a fully private, appointment-only studio, so it's safe for women to use alone.",
+        },
+        {
+          q: "What payment methods do you accept?",
+          a: "Cash on the day is accepted, as are major credit cards.",
+        },
+        {
+          q: "Can I cancel?",
+          a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
+        },
+      ],
+      btnPricing: "Compare plans on the Pricing page",
+      btnBook: "Book Your First Session",
     },
     monthlySupportPage: {
       eyebrow: "MONTHLY SUPPORT",
