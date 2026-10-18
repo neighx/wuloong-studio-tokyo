@@ -276,3 +276,32 @@ Vercelへデプロイした場合に有効になる変更：
 **未確認事項**：
 - 英語版カレンダーUIの実際の見た目（レイアウト等）は、ローカル環境（mockモード・Playwright）でのみスクリーンショット確認済み。本番URLでの実機スクリーンショット確認は未実施（文言がバンドルに含まれていることのみ確認）。
 - GA4計測は引き続き測定ID未設定のため非アクティブ。
+
+## 12. 本番公開（2026-10-19 03:50 JST）— MIX・マスタリングの利用規約・注意事項を追加
+
+**公開日時（JST）**：2026-10-19 03:50:48（Vercel production deployment created time）
+**対象コミット**：`86218a1`（"Add MIX/mastering terms clause and notice section"）
+**公開URL**：https://wuloong.jp （Vercel deployment: `https://wuloong-studio-tokyo-ia6j8qxs6-neighxs-projects.vercel.app` / id `dpl_3nGq5BLkDLMUxcFLm3YK43gV3Efs`）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-6qi86cn0z-neighxs-projects.vercel.app`（commit `89c219c`）。`vercel rollback https://wuloong-studio-tokyo-6qi86cn0z-neighxs-projects.vercel.app` で戻せる。
+
+**デプロイ手順**：前回までと同じ、GitHub連携（`git push origin main`）によるVercelの通常の自動ビルド・デプロイ。
+
+**内容**：
+- `/terms`（利用規約）に「MIX・マスタリングサービスについて」を新条項として追加（制作期間・修正対応・返金について・当スタジオの不備について、の4項目）。従来の最終条「規約の変更について」は番号を繰り下げて末尾を維持。
+- `/song-package`に、同内容を平易な文章にした「NOTICE」ボックスを追加。
+- 日英両方に反映。トップ・料金表・予約フォーム等、他ページは変更していない。
+
+**公開後の確認結果（すべて読み取り操作。本番へのテスト予約・登録・送信は行っていない）**：
+
+| 確認項目 | 結果 |
+| --- | --- |
+| `/terms`の初期HTMLに新条項があるか | 「MIX・マスタリングサービスについて」「制作期間」を確認 |
+| `/song-package`の初期HTMLに注意事項があるか | 「MIX・MASTERINGについて」「原則としてお受けいたしかねます」を確認 |
+| 主要ページ（/、/booking、/first-time、/pricing、/faq、/terms、/privacy、/contact、/song-package、/access、/monthly-support） | すべて200 |
+| `/pricing`の料金表示が変わっていないこと | ¥12,000・¥30,000〜とも変更なしを確認 |
+
+**重大な起動・表示不具合**：なし。切り戻しは行っていない。
+
+**未確認事項**：
+- 英語版の新条項・注意事項は、配信バンドル内に英文が含まれていることのみ本番で確認（詳細な表示レイアウトはローカルでのみ確認済み）。
+- 返金・修正対応等の運用上の実態（実際の初稿納期の目安等）は、今回いただいた文面をそのまま反映したもので、別途の事実確認は行っていない。
