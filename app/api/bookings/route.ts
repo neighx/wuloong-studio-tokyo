@@ -12,6 +12,8 @@ import { getPlanById, type PlanId } from "@/lib/pricing"
 import { runExclusive } from "@/lib/slot-lock"
 import { getCachedBookingResult, cacheBookingResult } from "@/lib/idempotency-store"
 import { computeReceiptNumber } from "@/lib/receipt"
+import { getJSTDateString, addDaysToDateString } from "@/lib/datetime"
+import { WEB_BOOKING_WINDOW_DAYS } from "@/lib/constants"
 
 export interface BookingRequest {
   planId: string
@@ -73,6 +75,23 @@ export async function POST(req: NextRequest) {
 
   if (!/^\d{2}:\d{2}$/.test(body.time)) {
     return NextResponse.json({ error: "Invalid time format. Use HH:mm" }, { status: 400 })
+  }
+
+  // Web予約は本日(JST)から WEB_BOOKING_WINDOW_DAYS 日先までに限定する。
+  // それより先・過去の日付はカレンダー側でも選べないが、APIを直接叩かれた
+  // 場合に備えてサーバー側でも明示的に拒否する。
+  const todayJST = getJSTDateString()
+  const maxBookableDate = addDaysToDateString(todayJST, WEB_BOOKING_WINDOW_DAYS)
+  if (body.date < todayJST) {
+    return NextResponse.json({ error: "Requested date is in the past" }, { status: 400 })
+  }
+  if (body.date > maxBookableDate) {
+    return NextResponse.json(
+      {
+        error: `この日程はWeb予約の受付期間（本日から${WEB_BOOKING_WINDOW_DAYS}日先まで）を超えています。Instagram DMまたはメールでご相談ください。`,
+      },
+      { status: 400 }
+    )
   }
 
   // プラン・所要時間はクライアントの入力を信用せず、サーバー側の定義から取得する。

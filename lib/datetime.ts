@@ -27,3 +27,17 @@ export function getJSTDateString(instant: Date = new Date()): string {
   const day = String(d.getDate()).padStart(2, "0")
   return `${y}-${m}-${day}`
 }
+
+/**
+ * "YYYY-MM-DD" 文字列に日数を加算し、"YYYY-MM-DD" 文字列で返す純粋関数。
+ * タイムゾーンに依存しないようUTC正午を基準に計算する（DST等の影響を受けない）。
+ */
+export function addDaysToDateString(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number)
+  const base = new Date(Date.UTC(y, m - 1, d, 12))
+  base.setUTCDate(base.getUTCDate() + days)
+  const yy = base.getUTCFullYear()
+  const mm = String(base.getUTCMonth() + 1).padStart(2, "0")
+  const dd = String(base.getUTCDate()).padStart(2, "0")
+  return `${yy}-${mm}-${dd}`
+}
