@@ -305,3 +305,14 @@ Vercelへデプロイした場合に有効になる変更：
 **未確認事項**：
 - 英語版の新条項・注意事項は、配信バンドル内に英文が含まれていることのみ本番で確認（詳細な表示レイアウトはローカルでのみ確認済み）。
 - 返金・修正対応等の運用上の実態（実際の初稿納期の目安等）は、今回いただいた文面をそのまま反映したもので、別途の事実確認は行っていない。
+
+## 13. 本番公開（2026-10-19 04:32 JST）— MIX・MASTERINGの注意事項を開閉式に変更
+
+**公開日時（JST）**：2026-10-19 04:32:59（Vercel production deployment created time）
+**対象コミット**：`0beeb4e`（"Make the song-package MIX/mastering notice collapsible"）
+**公開URL**：https://wuloong.jp/song-package （Vercel deployment: `https://wuloong-studio-tokyo-9q58on3jm-neighxs-projects.vercel.app` / id `dpl_746VHB7C1sDSmYKm7vP8F7n9L4pW`）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-nms3gotbg-neighxs-projects.vercel.app`（commit `77a0262`）。`vercel rollback https://wuloong-studio-tokyo-nms3gotbg-neighxs-projects.vercel.app` で戻せる。
+
+**内容**：`/song-package`の「MIX・MASTERINGについて」通知ボックスを、FAQコンポーネントと同じ`<details>/<summary>`方式の開閉式に変更。デフォルトは閉じた状態（タイトルのみ表示）で、クリックすると本文が展開される。本文はクリック前からSSR済みの初期HTMLに含まれる。他ページへの変更なし。
+
+**公開後の確認結果（読み取り操作のみ）**：`<details>`要素と本文「原則としてお受けいたしかねます」が初期HTMLに含まれていることを確認。主要11ページすべて200。重大な不具合なし、切り戻しは行っていない。
