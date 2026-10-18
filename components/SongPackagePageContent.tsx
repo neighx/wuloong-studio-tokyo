@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { ChevronDown } from "lucide-react"
 import CTASection from "@/components/CTASection"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
@@ -211,32 +212,46 @@ export default function SongPackagePageContent() {
         </div>
       </section>
 
-      {/* ── Notice: MIX / MASTERING について ── */}
+      {/* ── Notice: MIX / MASTERING について ──
+          <details>/<summary>を使用。開閉してもSSR時点のHTMLに本文が含まれる
+          （FAQコンポーネントと同じ方式。クリックするまで内容が生成されない作りにしない）。 */}
       <section className="py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-2xl mx-auto">
-          <div
-            className="rounded-2xl p-8 sm:p-10"
+          <details
+            className="group rounded-2xl overflow-hidden"
             style={{ background: "linear-gradient(155deg, #f8f9ff 0%, #f4f0ff 100%)", border: "1px solid rgba(107,159,212,0.12)" }}
           >
-            <p
-              className="text-[#6b9fd4]"
-              style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.45em", textTransform: "uppercase", marginBottom: "1rem" }}
+            <summary
+              className="flex items-center justify-between gap-4 p-8 sm:p-10 cursor-pointer list-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6b9fd4] focus-visible:outline-offset-2"
             >
-              {T.noticeEyebrow}
-            </p>
-            <h2
-              className="text-[#1a2340] font-bold"
-              style={{ fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)", marginBottom: "1.25rem" }}
-            >
-              {T.noticeTitle}
-            </h2>
-            <p
-              className="text-[#4a5568]"
-              style={{ fontSize: "0.85rem", lineHeight: 2, whiteSpace: "pre-line" }}
-            >
-              {T.noticeBody}
-            </p>
-          </div>
+              <span>
+                <p
+                  className="text-[#6b9fd4]"
+                  style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.45em", textTransform: "uppercase", marginBottom: "1rem" }}
+                >
+                  {T.noticeEyebrow}
+                </p>
+                <span
+                  className="text-[#1a2340] font-bold block"
+                  style={{ fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)" }}
+                >
+                  {T.noticeTitle}
+                </span>
+              </span>
+              <ChevronDown
+                size={22}
+                className="text-[#6b9fd4] flex-shrink-0 transition-transform duration-200 group-open:rotate-180"
+              />
+            </summary>
+            <div className="px-8 sm:px-10 pb-8 sm:pb-10">
+              <p
+                className="text-[#4a5568] border-t border-[#e2e8f0] pt-6"
+                style={{ fontSize: "0.85rem", lineHeight: 2, whiteSpace: "pre-line" }}
+              >
+                {T.noticeBody}
+              </p>
+            </div>
+          </details>
         </div>
       </section>
 
