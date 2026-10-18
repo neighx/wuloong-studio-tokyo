@@ -6,7 +6,7 @@ const content = {
   ja: {
     eyebrow: "TERMS OF SERVICE",
     title: "利用規約",
-    lastUpdated: "最終更新日：2025年7月",
+    lastUpdated: "最終更新日：2026年10月",
     intro: "本利用規約は、Wuloong Studio TOKYO（運営：GOODSEEDS、所在地：東京都世田谷区上馬）が提供するスタジオサービスの利用条件を定めるものです。詳細住所は、ご予約確定後にご案内いたします。ご予約・ご利用いただいた時点で、本規約に同意いただいたものとします。",
     sections: [
       {
@@ -93,6 +93,28 @@ const content = {
       },
       {
         num: "13",
+        title: "MIX・マスタリングサービスについて",
+        subItems: [
+          {
+            label: "制作期間",
+            body: "お客様から制作に必要な音源・資料・ご要望等をすべて受領した後、原則として約1週間を目安に初稿（第1校）を提出いたします。ただし、制作内容や予約状況等により納期が前後する場合があります。その際は、事前にご案内いたします。",
+          },
+          {
+            label: "修正対応",
+            body: "初稿提出後の修正は、原則として2回まで料金内で対応いたします。修正は当初ご依頼いただいた制作内容の範囲内とし、大幅なアレンジ変更や新たな制作作業を伴う場合は、別途料金をご案内する場合があります。",
+          },
+          {
+            label: "返金について",
+            body: "MIX・マスタリングは、専門的な技術と作業時間を要するサービスです。そのため、制作開始後、音質の好みや完成イメージとの相違など、お客様の主観的なご判断を理由とする返金は、原則としてお受けいたしかねます。",
+          },
+          {
+            label: "当スタジオの不備について",
+            body: "当スタジオの作業上の不備や契約内容との相違が認められる場合は、内容を確認のうえ、法令および契約内容に従い適切に対応いたします。",
+          },
+        ],
+      },
+      {
+        num: "14",
         title: "規約の変更について",
         body: "本規約は、必要に応じて内容を変更する場合があります。\n変更後の規約は、当スタジオのWebサイト、予約ページ、またはその他当スタジオが定める方法により告知します。",
       },
@@ -101,7 +123,7 @@ const content = {
   en: {
     eyebrow: "TERMS OF SERVICE",
     title: "Terms of Service",
-    lastUpdated: "Last updated: July 2025",
+    lastUpdated: "Last updated: October 2026",
     intro: "These Terms of Service govern the use of studio services provided by Wuloong Studio TOKYO (operated by GOODSEEDS, located in Kamiuma, Setagaya, Tokyo). The full address will be provided upon booking confirmation. By making a reservation or using our services, you agree to these Terms.",
     sections: [
       {
@@ -188,6 +210,28 @@ const content = {
       },
       {
         num: "13",
+        title: "Mixing & Mastering Services",
+        subItems: [
+          {
+            label: "Production Timeline",
+            body: "Once we have received all audio files, materials, and requests needed for production from you, we will deliver the first draft (first revision) within approximately one week as a general guideline. Delivery times may vary depending on the production content or current booking schedule; in such cases, we will inform you in advance.",
+          },
+          {
+            label: "Revisions",
+            body: "After the first draft is delivered, revisions are included in the price for up to 2 rounds as a general rule. Revisions are limited to the scope of the originally requested production content; if a major arrangement change or new production work is required, we may propose an additional fee.",
+          },
+          {
+            label: "Refunds",
+            body: "Mixing and mastering require specialized skill and production time. For this reason, once production has begun, we are generally unable to offer refunds based on subjective factors such as personal taste in sound or differences from an imagined final result.",
+          },
+          {
+            label: "Studio Error or Deficiency",
+            body: "If a deficiency in our work or a discrepancy with the agreed contract content is confirmed, we will review the matter and respond appropriately in accordance with applicable law and the terms of the agreement.",
+          },
+        ],
+      },
+      {
+        num: "14",
         title: "Changes to These Terms",
         body: "These Terms may be updated as needed.\nChanges will be communicated via the studio's website, booking page, or other channels designated by the studio.",
       },
@@ -265,6 +309,24 @@ export default function TermsPageContent() {
                     </li>
                   ))}
                 </ul>
+              )}
+
+              {"subItems" in section && section.subItems && (
+                <div className="space-y-4">
+                  {section.subItems.map((item, i) => (
+                    <div key={item.label}>
+                      <p className="text-sm font-bold text-[#1a2340] mb-1">
+                        {i + 1}. {item.label}
+                      </p>
+                      <p
+                        className="text-sm text-[#4a5568] leading-[1.95]"
+                        style={{ whiteSpace: "pre-line" }}
+                      >
+                        {item.body}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               )}
 
               {"note" in section && section.note && (

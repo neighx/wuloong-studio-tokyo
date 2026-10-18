@@ -27,6 +27,9 @@ type TSongPackagePage = {
   flowEyebrow: string
   flowTitle: string
   flowSteps: FlowStep[]
+  noticeEyebrow: string
+  noticeTitle: string
+  noticeBody: string
   reassurance: string
   btnInstagram: string
 }
@@ -204,6 +207,35 @@ export default function SongPackagePageContent() {
                 <p className="text-sm text-[#64748b] leading-relaxed" style={{ whiteSpace: "pre-line" }}>{step.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Notice: MIX / MASTERING について ── */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <div
+            className="rounded-2xl p-8 sm:p-10"
+            style={{ background: "linear-gradient(155deg, #f8f9ff 0%, #f4f0ff 100%)", border: "1px solid rgba(107,159,212,0.12)" }}
+          >
+            <p
+              className="text-[#6b9fd4]"
+              style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.45em", textTransform: "uppercase", marginBottom: "1rem" }}
+            >
+              {T.noticeEyebrow}
+            </p>
+            <h2
+              className="text-[#1a2340] font-bold"
+              style={{ fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)", marginBottom: "1.25rem" }}
+            >
+              {T.noticeTitle}
+            </h2>
+            <p
+              className="text-[#4a5568]"
+              style={{ fontSize: "0.85rem", lineHeight: 2, whiteSpace: "pre-line" }}
+            >
+              {T.noticeBody}
+            </p>
           </div>
         </div>
       </section>

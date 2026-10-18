@@ -564,6 +564,10 @@ export const t = {
         { num: "02", title: "レコーディング", desc: "3時間のセッションで、ボーカルを録音します。\n必要に応じて歌い方や重ね方も一緒に確認します。" },
         { num: "03", title: "MIX / MASTERING・納品", desc: "録音後、ボーカル編集とMIX / MASTERINGを行い、\n完成音源をWAV / MP3でお渡しします。\n修正は2回まで対応します。" },
       ],
+      noticeEyebrow: "NOTICE",
+      noticeTitle: "MIX・MASTERINGについて",
+      noticeBody:
+        "MIX・MASTERINGは、お客様のご希望を大切にしながら、一曲一曲丁寧に制作を進めております。\n\n必要な音源やご要望をすべてお預かりしてから、原則として約1週間を目安に初稿（第1校）をお送りいたします。制作状況や楽曲の内容によって納期が前後する場合は、事前にご案内いたします。\n\n仕上がりの修正は2回まで対応しておりますので、ご希望がございましたらお気軽にお申し付けください。\n\nなお、料金には制作に伴う作業時間や技術料が含まれるため、仕上がりの好みやイメージの相違を理由とした返金は、原則としてお受けいたしかねます。\n\nご理解のほど、よろしくお願いいたします。",
       reassurance: "まだ曲の仕上がりがはっきり決まっていなくても大丈夫です。\n今の状態に合わせてご案内します。",
       btnInstagram: "Instagramで相談する",
     },
@@ -1162,6 +1166,10 @@ export const t = {
         { num: "02", title: "Recording", desc: "Track your vocals in a 3-hour session.\nWe will work on delivery and layering together, as needed." },
         { num: "03", title: "MIX / MASTERING & delivery", desc: "After tracking, we edit, mix, and master your vocal.\nDelivered in WAV / MP3, with up to 2 rounds of revisions." },
       ],
+      noticeEyebrow: "NOTICE",
+      noticeTitle: "About Mixing & Mastering",
+      noticeBody:
+        "For mixing and mastering, we carefully produce each track one at a time while respecting what you're going for.\n\nOnce we've received all the audio and requests we need from you, we'll send a first draft (first revision) within about one week as a general guideline. If the timeline shifts due to the production content or current workload, we'll let you know in advance.\n\nUp to 2 rounds of revisions are included, so please don't hesitate to let us know if you'd like changes.\n\nPlease note that, because the price covers the production time and technical work involved, we are generally unable to offer refunds based on personal taste or differences from an imagined final result.\n\nThank you for your understanding.",
       reassurance: "It's okay if you don't have everything figured out yet.\nWe'll meet you where you are.",
       btnInstagram: "Message us on Instagram",
     },
