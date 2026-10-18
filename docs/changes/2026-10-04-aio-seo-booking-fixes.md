@@ -245,3 +245,34 @@ Vercelへデプロイした場合に有効になる変更：
 - 石川氏の役割表記・プライバシーポリシーの保存期間/契約条件は、運営者確認済み（2026-10-04のやり取りで確認済み）。
 - モバイル実機でのスクリーンショット確認はローカル環境（ローカルにインストールしたPlaywright、mockモード）で実施済みだが、本番URLそのものでの実機確認は未実施。
 - GA4計測は引き続き測定ID未設定のため非アクティブ。
+
+## 11. 本番公開（2026-10-19 03:22 JST）— Web予約を30日先までに制限、予約カレンダーの英語化
+
+**公開日時（JST）**：2026-10-19 03:22:08（Vercel production deployment created time）
+**対象コミット**：`14bd236`（"Limit web booking to 30 days ahead; route longer-term requests to DM/email"）
+**公開URL**：https://wuloong.jp （Vercel deployment: `https://wuloong-studio-tokyo-f3mpc8u2z-neighxs-projects.vercel.app` / id `dpl_H1yWxft7P8b1DnSyjBqA3ZJRXubN`）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-ft7uiuoqy-neighxs-projects.vercel.app`（commit `37e848f`）。`vercel rollback https://wuloong-studio-tokyo-ft7uiuoqy-neighxs-projects.vercel.app` で戻せる。
+
+**デプロイ手順**：前回までと同じ、GitHub連携（`git push origin main`）によるVercelの通常の自動ビルド・デプロイ。
+
+**内容**：
+- Web予約カレンダーで選択できる日付を「本日から30日先」までに制限（それ以降の日はグレーアウトし、「次の月へ」も進めない年月には進ませない）。カレンダー下に期限日・Instagram DM/メールへの案内を表示。
+- `/api/bookings`にもサーバー側で同じ期間制限（と過去日付の拒否）を追加。
+- `components/BookingCalendar.tsx`を全面的に多言語対応（これまで日本語固定だった曜日・読み込み中・エラー文・空き/予約済み表示・新しい期間案内文などをJA/EN両方に）。
+
+**公開後の確認結果（すべて読み取り操作。本番へのテスト予約・カレンダー登録・実メール送信は行っていない）**：
+
+| 確認項目 | 結果 |
+| --- | --- |
+| 主要ページ（/、/booking、/first-time、/pricing、/faq、/terms、/privacy、/contact） | すべて200 |
+| `/booking`の初期HTMLに期間案内文があるか | 「Web予約は本日から30日先」を確認 |
+| 空き状況API | 正常応答（durationHours等含む） |
+| 30日超の日付での予約申込 | `POST /api/bookings`が400で明示的に拒否（カレンダー・メール送信には到達しない設計のため安全に検証） |
+
+**重大な起動・表示不具合**：なし。切り戻しは行っていない。
+
+**追加確認**：本番配信のJSバンドル内に英語の期間案内文（"Online booking is open from today..."）が含まれていることを確認した（読み取りのみ）。
+
+**未確認事項**：
+- 英語版カレンダーUIの実際の見た目（レイアウト等）は、ローカル環境（mockモード・Playwright）でのみスクリーンショット確認済み。本番URLでの実機スクリーンショット確認は未実施（文言がバンドルに含まれていることのみ確認）。
+- GA4計測は引き続き測定ID未設定のため非アクティブ。
