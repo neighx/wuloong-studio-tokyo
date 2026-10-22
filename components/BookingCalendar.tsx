@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { INSTAGRAM_URL, WEB_BOOKING_WINDOW_DAYS } from "@/lib/constants"
+import { INSTAGRAM_URL } from "@/lib/constants"
 import { track } from "@/lib/analytics"
 import { getPlanById, type PlanId } from "@/lib/pricing"
-import { toJSTWallClock, getJSTDateString, addDaysToDateString } from "@/lib/datetime"
+import { toJSTWallClock, getJSTDateString, getEndOfNextMonth } from "@/lib/datetime"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
@@ -45,7 +45,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
   const daysInMonth = new Date(year, month + 1, 0).getDate()
 
   const todayJSTForNav = getJSTDateString()
-  const maxBookableDate = addDaysToDateString(todayJSTForNav, WEB_BOOKING_WINDOW_DAYS)
+  const maxBookableDate = getEndOfNextMonth(todayJSTForNav)
   // 翌月の1日がすでにWeb予約の受付期間を超えている場合は、それ以上先へ進めない
   // （進んでも予約できる日が1つも無い月になるため）
   const firstDayOfNextMonthStr = `${month === 11 ? year + 1 : year}-${String(((month + 1) % 12) + 1).padStart(2, "0")}-01`
@@ -114,8 +114,8 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
     return dateStr < todayJST
   }
-  // Web予約は本日から WEB_BOOKING_WINDOW_DAYS 日先まで。それを超える日は
-  // カレンダー上では選べず、Instagram DM・メールでの個別相談に案内する。
+  // Web予約は常に「翌月末日」まで。それを超える日はカレンダー上では
+  // 選べず、Instagram DM・メールでの個別相談に案内する。
   const isBeyondWindow = (day: number) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
     return dateStr > maxBookableDate
@@ -130,10 +130,8 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
     month: "long",
     day: "numeric",
   })
-  const windowNoteText = T.windowNote
-    .replace("{days}", String(WEB_BOOKING_WINDOW_DAYS))
-    .replace("{date}", maxBookableDateLabel)
-  const windowTooltipText = T.windowTooltip.replace("{days}", String(WEB_BOOKING_WINDOW_DAYS))
+  const windowNoteText = T.windowNote.replace("{date}", maxBookableDateLabel)
+  const windowTooltipText = T.windowTooltip.replace("{date}", maxBookableDateLabel)
 
   return (
     <div className="space-y-4">

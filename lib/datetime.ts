@@ -41,3 +41,19 @@ export function addDaysToDateString(dateStr: string, days: number): string {
   const dd = String(base.getUTCDate()).padStart(2, "0")
   return `${yy}-${mm}-${dd}`
 }
+
+/**
+ * "YYYY-MM-DD" 文字列（JSTの「今日」）を受け取り、その「翌月の末日」を
+ * "YYYY-MM-DD" 文字列で返す純粋関数。年またぎも自動で処理される
+ * （例：2026-12-15 → 2027-01-31）。タイムゾーンに依存しないようUTCで計算する。
+ */
+export function getEndOfNextMonth(dateStr: string): string {
+  const [y, m] = dateStr.split("-").map(Number)
+  // 「翌々月の0日目」＝「翌月の末日」。month は0-indexedなので、
+  // 1-indexedの今月 m がそのまま「翌月の0-indexed値」になる。
+  const base = new Date(Date.UTC(y, m + 1, 0, 12))
+  const yy = base.getUTCFullYear()
+  const mm = String(base.getUTCMonth() + 1).padStart(2, "0")
+  const dd = String(base.getUTCDate()).padStart(2, "0")
+  return `${yy}-${mm}-${dd}`
+}

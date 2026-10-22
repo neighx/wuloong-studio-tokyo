@@ -4,10 +4,6 @@ export const INSTAGRAM_URL = "https://www.instagram.com/wuloongstudio"
 export const LINE_URL = ""
 export const BOOKING_CALENDAR_URL = "https://calendar.google.com/calendar"
 
-// Web予約カレンダーで申込を受け付ける期間（本日を含めて何日先まで）。
-// これを超える日程・長期制作・急ぎの相談はInstagram DM/メールでの個別対応とする。
-export const WEB_BOOKING_WINDOW_DAYS = 30
-
 // 公開中の正規ドメイン。sitemap・robots・canonical・JSON-LDで共通参照する。
 // (.env.local の NEXT_PUBLIC_SITE_URL は Vercel の既定ドメインを指しており未使用のため、
 //  実際に公開されている独自ドメインをここで明示する)

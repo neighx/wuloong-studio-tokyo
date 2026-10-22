@@ -438,8 +438,8 @@ export const t = {
       availableLabel: "空き",
       bookedTitle: "予約済み",
       timeSuffix: "〜",
-      windowNote: "Web予約は本日から{days}日先（{date}）までです。それ以降のご予約・長期制作や複数日のREC・お急ぎのご相談は、Instagram DMまたはメールで承ります。",
-      windowTooltip: "Web予約は本日から{days}日先までです。ご相談はInstagramまたはメールへ",
+      windowNote: "Web予約は{date}までご予約いただけます。毎月1日に翌月分を自動で受付開始するため、受付期間は毎月更新されます。それ以降のご予約・長期制作や複数日のREC・お急ぎのご相談は、Instagram DMまたはメールで承ります。",
+      windowTooltip: "Web予約は{date}までです。ご相談はInstagramまたはメールへ",
     },
     firstTimeFacts: {
       title: "予約前に知っておきたいこと",
@@ -1040,8 +1040,8 @@ export const t = {
       availableLabel: "Available",
       bookedTitle: "Booked",
       timeSuffix: "",
-      windowNote: "Online booking is open from today through {days} days ahead ({date}). For anything beyond that — long-term projects, multi-day sessions, or urgent requests — please reach out via Instagram DM or email.",
-      windowTooltip: "Online booking is only open up to {days} days ahead. Please reach out via Instagram or email.",
+      windowNote: "Online booking is open through {date}. The window rolls forward automatically on the 1st of each month to cover the following month. For anything beyond that — long-term projects, multi-day sessions, or urgent requests — please reach out via Instagram DM or email.",
+      windowTooltip: "Online booking is only open through {date}. Please reach out via Instagram or email.",
     },
     firstTimeFacts: {
       title: "What to know before you book",
