@@ -194,7 +194,7 @@ export const t = {
       },
       {
         q: "キャンセルはできますか？",
-        a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%、無断キャンセルの場合は100%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
+        a: "ご予約のキャンセルは、ご利用日前日の18:00まで無料で承っております。それ以降および当日のキャンセルはご予約料金の50%、無断キャンセルは100%のキャンセル料を申し受けます。エンジニアのスケジュール確保のため、ご理解のほどお願いいたします。クレジットカードで前払いの場合は、キャンセル料を差し引いた残額をお振込みで返金いたします。",
       },
       {
         q: "持ち物は何が必要ですか？",
@@ -299,7 +299,7 @@ export const t = {
         },
         {
           q: "キャンセルはできますか？",
-          a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%、無断キャンセルの場合は100%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
+          a: "ご予約のキャンセルは、ご利用日前日の18:00まで無料で承っております。それ以降および当日のキャンセルはご予約料金の50%、無断キャンセルは100%のキャンセル料を申し受けます。エンジニアのスケジュール確保のため、ご理解のほどお願いいたします。クレジットカードで前払いの場合は、キャンセル料を差し引いた残額をお振込みで返金いたします。",
         },
         {
           q: "録音した音源のデータはもらえますか？",
@@ -485,7 +485,7 @@ export const t = {
         },
         {
           q: "キャンセルはできますか？",
-          a: "大変申し訳ないのですが、エンジニアのスケジュール対応の都合上、キャンセルは前日の18時までとさせていただいております。当日のキャンセルにつきましては、キャンセル料50%、無断キャンセルの場合は100%をお願いしております。心苦しいのですが、ご理解のほどよろしくお願いいたします。クレジットカードで前払いの場合は50%を差し引いてからお振込対応いたしますのでよろしくお願いいたします。",
+          a: "ご予約のキャンセルは、ご利用日前日の18:00まで無料で承っております。それ以降および当日のキャンセルはご予約料金の50%、無断キャンセルは100%のキャンセル料を申し受けます。エンジニアのスケジュール確保のため、ご理解のほどお願いいたします。クレジットカードで前払いの場合は、キャンセル料を差し引いた残額をお振込みで返金いたします。",
         },
       ],
       btnPricing: "料金ページで比較する",
@@ -796,7 +796,7 @@ export const t = {
       },
       {
         q: "Can I cancel?",
-        a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee; a no-show is charged 100%. We appreciate your understanding. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
+        a: "Cancellations are free of charge up to 6:00 PM the day before your session. After that point, and for same-day cancellations, a fee of 50% of the booking fee applies; no-shows are charged 100%. We appreciate your understanding, as this helps us secure our engineer's schedule. If you paid in advance by credit card, we'll deduct the applicable cancellation fee and refund the remainder.",
       },
       {
         q: "What should I bring?",
@@ -901,7 +901,7 @@ export const t = {
         },
         {
           q: "Can I cancel?",
-          a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee; a no-show is charged 100%. We appreciate your understanding. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
+          a: "Cancellations are free of charge up to 6:00 PM the day before your session. After that point, and for same-day cancellations, a fee of 50% of the booking fee applies; no-shows are charged 100%. We appreciate your understanding, as this helps us secure our engineer's schedule. If you paid in advance by credit card, we'll deduct the applicable cancellation fee and refund the remainder.",
         },
         {
           q: "Will I get the recording files?",
@@ -1087,7 +1087,7 @@ export const t = {
         },
         {
           q: "Can I cancel?",
-          a: "We're very sorry, but due to our engineer's scheduling, cancellations must be made by 6pm the day before your session. For same-day cancellations, we ask for a 50% cancellation fee; a no-show is charged 100%. If you paid in advance by credit card, we'll deduct 50% and refund the remainder.",
+          a: "Cancellations are free of charge up to 6:00 PM the day before your session. After that point, and for same-day cancellations, a fee of 50% of the booking fee applies; no-shows are charged 100%. We appreciate your understanding, as this helps us secure our engineer's schedule. If you paid in advance by credit card, we'll deduct the applicable cancellation fee and refund the remainder.",
         },
       ],
       btnPricing: "Compare plans on the Pricing page",
