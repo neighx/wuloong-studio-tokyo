@@ -281,7 +281,8 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       <p className="text-xs text-[#94a3b8] text-center">{TF.preSubmitNotice}</p>
       <button
         type="submit"
-        disabled={formState === "submitting"}
+        // 日付・時刻の両方が選ばれるまでは送信できないようにする（handleSubmit側のガードも維持）
+        disabled={formState === "submitting" || !selectedDate || !selectedTime}
         className="w-full btn-primary py-4 text-base font-bold disabled:opacity-60"
       >
         {formState === "submitting" ? TF.submitting : TF.submit}

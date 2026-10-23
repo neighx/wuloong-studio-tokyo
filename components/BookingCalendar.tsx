@@ -16,6 +16,7 @@ interface TimeSlot {
 }
 
 interface BookingCalendarProps {
+  /** 日付または時刻を選ぶたびに呼ばれる。日付だけを選んだ（時刻未選択の）状態では time は "" */
   onSelectDateTime?: (date: string, time: string) => void
   selectedDate?: string
   selectedTime?: string
@@ -102,6 +103,9 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
     const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
     setInternalDate(date)
     setInternalTime("")
+    // 日付を選び直した時点（同じ日付の再クリックを含む）で時刻の選択は解除されるため、
+    // 親にも時刻未選択（""）を通知し、古い日時が送信内容や予約リンクに残らないようにする
+    if (onSelectDateTime) onSelectDateTime(date, "")
   }
 
   const handleTimeClick = (time: string) => {
@@ -138,7 +142,10 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
       {/* Calendar */}
       <div className="glass-card rounded-3xl p-5 sm:p-6">
         <div className="flex items-center justify-between mb-5">
+          {/* カレンダーは予約フォーム（<form>）の中でも使われるため、操作ボタンはすべて
+              type="button" にし、クリックでフォームが送信されないようにする */}
           <button
+            type="button"
             onClick={prevMonth}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b]"
           >
@@ -146,6 +153,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
           </button>
           <span className="font-bold text-[#1a1a2e]">{monthLabel}</span>
           <button
+            type="button"
             onClick={nextMonth}
             disabled={!canGoNextMonth}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#6b9fd4]/10 transition-colors text-[#64748b] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
@@ -183,6 +191,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
 
             return (
               <button
+                type="button"
                 key={day}
                 onClick={() => !disabledDay && handleDateClick(day)}
                 disabled={disabledDay}
@@ -273,6 +282,7 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
                   const selected = internalTime === slot.time
                   return (
                     <button
+                      type="button"
                       key={slot.time}
                       onClick={() => handleTimeClick(slot.time)}
                       className={`

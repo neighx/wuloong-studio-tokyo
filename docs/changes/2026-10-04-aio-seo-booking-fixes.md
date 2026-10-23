@@ -409,3 +409,22 @@ Vercelへデプロイした場合に有効になる変更：
 **重大な起動・表示不具合**：なし。切り戻しは行っていない。
 
 **未確認事項**：なし（本件は表示文言とカード追加のみで、新しい計算ロジックや外部連携の変更を伴わないため）。
+
+## 16. 本番公開（2026-10-24）— 予約カレンダーの日付変更時の不具合修正／Next.js 16.4.3へ更新
+
+**対象コミット**：本コミット（`origin/main` の `7681394` の直後）
+**切り戻し先（直前の本番デプロイ）**：`https://wuloong-studio-tokyo-isq6m6ydq-neighxs-projects.vercel.app`（id `dpl_8eaLw1vUTnoS2ZfzXbaQGe7Ws4mf`、commit `7681394`）。`vercel rollback https://wuloong-studio-tokyo-isq6m6ydq-neighxs-projects.vercel.app` で戻せる。
+**デプロイ手順**：前回までと同じ、GitHub連携（`git push origin main`）によるVercelの通常の自動ビルド・デプロイ。
+
+**不具合**：予約フォームでA日の時刻を選んだ後にB日をクリックすると、カレンダー上はB日・時刻未選択になるが、フォーム側にはA日の日時が残り、そのまま送信するとA日の日時で申し込まれる経路があった。さらに、カレンダーの日付・時刻・月送りボタンに `type` 属性がなく、フォーム（`<form>`）内では送信ボタンとして扱われていたため、必須項目を入力済みの状態では日付や時刻をクリックしただけで、古い日時の申込が送信されていた（入力欄が空の場合はブラウザの必須項目チェックが表示されていた）。TOPページの「この日程で予約フォームへ進む」リンクにも、日付変更前の日時が残っていた。
+
+**修正**：
+- `components/BookingCalendar.tsx`：日付クリック時（同じ日付の再クリックを含む）に、親へ「日付＋時刻未選択」を通知。前月・翌月・日付・時刻ボタンに `type="button"` を指定。
+- `components/BookingForm.tsx`：日付・時刻の両方が選ばれるまで送信ボタンを無効化（送信処理側の日時未選択ガードは従来どおり維持）。
+- 予約API・Googleカレンダー連携・料金・3時間枠は無変更。
+
+**依存関係**：`next` を 16.2.9 → 16.4.3 に更新（関連して `@next/env`・`@next/swc-*`・`@swc/helpers`、Next.js同梱の `postcss`・`nanoid`、`sharp` 0.34.5 → 0.35.5 が更新）。React・nodemailer等は据え置き。Next.js 16.4.1未満に該当していた公開アドバイザリ（画像最適化・`use cache`・Windows環境・`next/og`等）を解消。回帰テスト用に開発依存として `jsdom` 29.1.1 を追加（本番バンドルには含まれない）。
+
+**回帰テスト**：`npm run test:booking`（`tests/booking-datetime.test.mjs`）。実際の `BookingForm`・`BookingCalendar`・TOP・予約ページを jsdom 上で操作し、日付変更・同日再クリック・初回選択・プラン変更・409・TOPの予約リンク・URL事前選択の9項目を検証（APIはモック）。
+
+**公開前の確認**：`tsc --noEmit` エラーなし／`next build`（Next.js 16.4.3）成功／回帰テスト9項目PASS／既存APIの受付期間・3時間枠・競合・仮申込をmockモードで確認／ローカルの本番ビルドを実Chrome（デスクトップ幅・スマホ幅エミュレーション）で操作し、予約APIへの通信をブラウザ側でモック化した状態で日付変更・月送り・送信内容・TOPリンク・プラン変更・409・URL事前選択を確認／主要ページの表示・画像最適化（`/_next/image`）・日英切替を確認。
