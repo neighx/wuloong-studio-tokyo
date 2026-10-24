@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react"
 import { INSTAGRAM_URL, LINE_URL } from "@/lib/constants"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
+import { FIELD_LIMITS } from "@/lib/validation"
 
 type FormState = "idle" | "submitting" | "success" | "error"
 
@@ -103,6 +104,7 @@ export default function ContactPageContent() {
                   <input
                     type="text"
                     name="name"
+                    maxLength={FIELD_LIMITS.name}
                     required
                     value={form.name}
                     onChange={handleChange}
@@ -114,6 +116,7 @@ export default function ContactPageContent() {
                   <input
                     type="email"
                     name="email"
+                    maxLength={FIELD_LIMITS.email}
                     required
                     value={form.email}
                     onChange={handleChange}
@@ -139,6 +142,7 @@ export default function ContactPageContent() {
                 <label className="block text-xs text-[#64748b] mb-1 font-medium">{T.message}</label>
                 <textarea
                   name="message"
+                  maxLength={FIELD_LIMITS.contactMessage}
                   required
                   rows={5}
                   value={form.message}

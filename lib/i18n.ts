@@ -261,6 +261,7 @@ export const t = {
       errorMsg: "エラーが発生しました。Instagramまたはメールからご連絡ください。",
       conflictMsg: "その時間帯は他のお申し込みが入っています。お手数ですが、別の時間をお選びください。",
       alertMissingDateTime: "日付と時間を選択してください",
+      dateTimeRequiredHint: "カレンダーで日付と時間を選ぶと、申し込みボタンが押せるようになります。",
       successTitle: "申込受付",
       successBody:
         "予約のお申し込みを受け付けました。現在は未確定です。内容と空き状況を確認後、スタジオから確定のご連絡をします。ご希望の日時を確保できない場合は、別日程をご相談します。",
@@ -863,6 +864,7 @@ export const t = {
       errorMsg: "Something went wrong. Please reach out via Instagram or email instead.",
       conflictMsg: "That time slot already has another application. Please choose a different time.",
       alertMissingDateTime: "Please select a date and time",
+      dateTimeRequiredHint: "Choose a date and time on the calendar to enable the submit button.",
       successTitle: "Application Received",
       successBody:
         "We've received your booking application. This is not yet confirmed. We'll check the details and availability, then contact you from the studio to confirm. If we can't accommodate your requested time, we'll suggest alternative dates.",

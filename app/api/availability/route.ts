@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAvailableSlots } from "@/lib/google-calendar"
 import { getPlanById, type PlanId } from "@/lib/pricing"
+import { isValidDateString } from "@/lib/datetime"
 
 /**
  * GET /api/availability?date=2026-10-05&planId=first-time-2h
@@ -18,6 +19,11 @@ export async function GET(req: NextRequest) {
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return NextResponse.json({ error: "Invalid date format. Use YYYY-MM-DD" }, { status: 400 })
+  }
+
+  // 実在しない日付（例: 2026-11-31）はカレンダー照会の前に拒否する（予約APIと共通の判定）。
+  if (!isValidDateString(date)) {
+    return NextResponse.json({ error: "Invalid date. Use an existing date in YYYY-MM-DD" }, { status: 400 })
   }
 
   const plan = getPlanById(planId as PlanId)

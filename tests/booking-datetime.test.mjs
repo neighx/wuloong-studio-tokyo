@@ -5,7 +5,7 @@
 // 実行: npm run test:booking
 import { describe, it, beforeEach, afterEach } from "node:test"
 import assert from "node:assert/strict"
-import { api, alerts } from "./support/dom-env.mjs"
+import { api, alerts, gaCalls } from "./support/dom-env.mjs"
 
 const { createElement, act } = await import("react")
 const { createRoot } = await import("react-dom/client")
@@ -210,5 +210,120 @@ describe("URLによる日時の事前選択（BookingPageContent）", () => {
     const calls = api.bookingCalls()
     assert.equal(calls.length, 1)
     assert.deepEqual([calls[0].body.date, calls[0].body.time], [ymd(31), "19:00"])
+  })
+})
+
+const HINT = "カレンダーで日付と時間を選ぶと、申し込みボタンが押せるようになります。"
+const hasHint = () => container.textContent.includes(HINT)
+const planChecked = () => container.querySelector('input[name="planId"]:checked')?.value
+const monthLabel = () => [...container.querySelectorAll("span")].map((s) => s.textContent.trim()).find((t) => /^\d{4}年\d{1,2}月$/.test(t))
+const gaEvents = (name) => gaCalls.filter((c) => c[0] === "event" && c[1] === name)
+
+describe("日時未選択の理由表示（F4）", () => {
+  it("日時が揃うまで理由を表示し、揃うと消え、日付を変えると再表示する", async () => {
+    await render(createElement(BookingForm, { defaultPlan: "first-time-2h" }))
+    assert.equal(hasHint(), true)
+    await pickDateTime(A, "10:00")
+    assert.equal(hasHint(), false)
+    await click(dayButton(B))
+    assert.equal(hasHint(), true)
+  })
+})
+
+describe("URLによる事前選択の検証（F1・F2）", () => {
+  for (const [label, search] of [
+    ["営業時間外の時刻", `plan=standard-3h&date=${ymd(30)}&time=09:00`],
+    ["実在しない日付", "plan=standard-3h&date=2026-11-31&time=10:00"],
+    ["受付期間外の日付", "plan=standard-3h&date=2026-12-15&time=10:00"],
+    ["過去の日付", `plan=standard-3h&date=${ymd(22)}&time=10:00`],
+    ["不正な書式", "plan=standard-3h&date=20261030&time=1000"],
+  ]) {
+    it(`${label}は選択しない（送信不可・理由表示）`, async () => {
+      globalThis.__TEST_SEARCH__ = search
+      await render(createElement(BookingPageContent))
+      await flush()
+      assert.equal(hasSelectedTime(), false)
+      assert.equal(submitButton().disabled, true)
+      assert.equal(hasHint(), true)
+      assert.equal(api.bookingCalls().length, 0)
+    })
+  }
+
+  it("当日の開始済み時刻（現在12:00に10:00）は時刻を選択しない", async () => {
+    globalThis.__TEST_SEARCH__ = `plan=standard-3h&date=${ymd(23)}&time=10:00`
+    await render(createElement(BookingPageContent))
+    await flush()
+    assert.equal(hasSelectedTime(), false)
+    assert.equal(submitButton().disabled, true)
+  })
+
+  it("存在しないプランは初回体験プランに戻す", async () => {
+    globalThis.__TEST_SEARCH__ = `plan=bogus&date=${ymd(30)}&time=13:00`
+    await render(createElement(BookingPageContent))
+    await flush()
+    assert.equal(planChecked(), "first-time-2h")
+  })
+
+  it("予約済みの時刻は、空き状況の取得後に親子とも選択解除する", async () => {
+    api.unavailable[ymd(30)] = ["13"]
+    globalThis.__TEST_SEARCH__ = `plan=standard-3h&date=${ymd(30)}&time=13:00`
+    await render(createElement(BookingPageContent))
+    await flush()
+    await fillCustomer()
+    assert.equal(hasSelectedTime(), false, "予約済みの時刻が選択表示のまま")
+    await assertCannotSubmit()
+  })
+
+  it("翌月の日付を事前選択すると、その月を表示して送信できる", async () => {
+    globalThis.__TEST_SEARCH__ = "plan=standard-3h&date=2026-11-15&time=10:00"
+    await render(createElement(BookingPageContent))
+    await flush()
+    await fillCustomer()
+    assert.equal(monthLabel(), "2026年11月")
+    assert.equal(hasSelectedTime(), true)
+    await click(submitButton())
+    assert.deepEqual([api.bookingCalls()[0]?.body.date, api.bookingCalls()[0]?.body.time], ["2026-11-15", "10:00"])
+  })
+})
+
+describe("GA4イベント（入力開始・申込受付成功）", () => {
+  const PII = ["テスト 太郎", "test@example.com", "090-0000-0000", "WLG-TEST000001"]
+
+  it("入力開始は1回だけ、申込受付成功は pending_confirmation の応答後に1回だけ送る（個人情報・受付番号を含まない）", async () => {
+    await render(createElement(BookingForm, { defaultPlan: "standard-3h" }))
+    await fillCustomer()
+    await fillCustomer()
+    assert.equal(gaEvents("booking_start").length, 1, "入力開始が重複して送られた")
+    assert.deepEqual(gaEvents("booking_start")[0][2], { plan_id: "standard-3h", lang: "ja" })
+    await pickDateTime(A, "10:00")
+    assert.equal(gaEvents("booking_submit_success").length, 0, "日時の選択だけで成功イベントが送られた")
+    await click(submitButton())
+    assert.equal(gaEvents("booking_submit_success").length, 1)
+    assert.deepEqual(gaEvents("booking_submit_success")[0][2], { plan_id: "standard-3h", lang: "ja" })
+    const all = JSON.stringify(gaCalls)
+    for (const v of PII) assert.equal(all.includes(v), false, `GA4へ送る値に個人情報・受付番号（${v}）が含まれる`)
+  })
+
+  for (const [mode, label] of [["conflict", "409（競合）"], ["error500", "500（サーバーエラー）"], ["unexpected", "200だが pending_confirmation でない応答"]]) {
+    it(`${label}では成功イベントを送らない`, async () => {
+      await render(createElement(BookingForm, { defaultPlan: "first-time-2h" }))
+      await fillCustomer()
+      await pickDateTime(A, "10:00")
+      api.bookingMode = mode
+      await click(submitButton())
+      assert.equal(api.bookingCalls().length, 1)
+      assert.equal(gaEvents("booking_submit_success").length, 0)
+      assert.equal(container.textContent.includes("WLG-TEST000001"), false, "受付完了画面が表示された")
+    })
+  }
+
+  it("送信ボタンの連打でも、送信と成功イベントは1回だけ", async () => {
+    await render(createElement(BookingForm, { defaultPlan: "first-time-2h" }))
+    await fillCustomer()
+    await pickDateTime(A, "10:00")
+    await act(async () => { submitButton().click(); submitButton().click(); form().requestSubmit() })
+    await flush()
+    assert.equal(api.bookingCalls().length, 1)
+    assert.equal(gaEvents("booking_submit_success").length, 1)
   })
 })

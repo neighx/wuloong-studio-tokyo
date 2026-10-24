@@ -3,6 +3,8 @@
 // - .ts/.tsx は既存の devDependency の typescript で JS に変換する（型チェックは tsc で別途行う）
 // - Next.js のランタイムが無いと動かない next/link・next/image・next/navigation だけを
 //   tests/support/mocks の最小実装に差し替える（予約フォーム・カレンダー本体は実物を使う）
+// - googleapis は常にテスト用の偽カレンダー（tests/support/mocks/googleapis.mjs）に差し替える
+//   （テストから本物のGoogleカレンダーへ通信することはない）
 import { readFileSync, existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import ts from "typescript"
@@ -12,10 +14,12 @@ const MOCKS = {
   "next/link": "./mocks/next-link.mjs",
   "next/image": "./mocks/next-image.mjs",
   "next/navigation": "./mocks/next-navigation.mjs",
+  googleapis: "./mocks/googleapis.mjs",
 }
 
 export async function resolve(specifier, context, nextResolve) {
   if (MOCKS[specifier]) return { url: new URL(MOCKS[specifier], import.meta.url).href, shortCircuit: true }
+  if (specifier === "next/server") return nextResolve(new URL("node_modules/next/server.js", ROOT).href, context)
   let spec = specifier
   if (spec.startsWith("@/")) spec = new URL(spec.slice(2), ROOT).href
   if ((spec.startsWith("file:") || spec.startsWith(".")) && !/\.[cm]?[jt]sx?$/.test(spec)) {

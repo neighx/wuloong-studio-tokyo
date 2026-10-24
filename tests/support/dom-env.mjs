@@ -14,6 +14,12 @@ for (const key of ["window", "document", "navigator", "HTMLElement", "HTMLInputE
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
+// GA4: テスト用のダミー測定ID（lib/analytics.ts の読み込みより前に設定する）。gtag は呼び出しを記録するだけで
+// 外部へは送信しない（gtag.js 本体は読み込まない）。
+process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID = "G-TEST000000"
+export const gaCalls = []
+window.gtag = (...args) => gaCalls.push(args)
+
 // 日付固定
 export const FIXED_NOW = Date.parse("2026-10-23T03:00:00Z")
 const RealDate = Date
@@ -35,12 +41,16 @@ globalThis.alert = window.alert = (msg) => alerts.push(String(msg))
 // API のモック
 export const api = {
   calls: [],
-  /** "ok" | "conflict" */
+  /** "ok" | "conflict" | "error500" | "unexpected"（200だが pending_confirmation でない） */
   bookingMode: "ok",
+  /** 日付ごとの予約済みの開始時（例: { "2026-11-15": ["13"] }） */
+  unavailable: {},
   reset() {
     this.calls.length = 0
     this.bookingMode = "ok"
+    this.unavailable = {}
     alerts.length = 0
+    gaCalls.length = 0
   },
   availabilityCalls(date) {
     return this.calls.filter((c) => c.url.startsWith("/api/availability") && (!date || c.url.includes(`date=${date}`)))
@@ -58,12 +68,14 @@ globalThis.fetch = async (input, init = {}) => {
     const slots = ["10", "13", "16", "19"].map((h) => ({
       start: `${date}T${h}:00:00+09:00`,
       end: `${date}T${String(Number(h) + 3).padStart(2, "0")}:00:00+09:00`,
-      available: true,
+      available: !(api.unavailable[date] ?? []).includes(h),
     }))
     return json(200, { date, slots })
   }
   if (url === "/api/bookings") {
     if (api.bookingMode === "conflict") return json(409, { error: "conflict" })
+    if (api.bookingMode === "error500") return json(500, { error: "Failed to submit application" })
+    if (api.bookingMode === "unexpected") return json(200, { success: true })
     return json(200, { success: true, status: "pending_confirmation", receiptNumber: "WLG-TEST000001", eventId: "mock-event", message: "" })
   }
   throw new Error(`Unexpected fetch in test: ${url}`)

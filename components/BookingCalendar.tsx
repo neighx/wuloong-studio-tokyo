@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { INSTAGRAM_URL } from "@/lib/constants"
 import { track } from "@/lib/analytics"
 import { getPlanById, type PlanId } from "@/lib/pricing"
-import { toJSTWallClock, getJSTDateString, getEndOfNextMonth } from "@/lib/datetime"
+import { toJSTWallClock, getJSTDateString, getEndOfNextMonth, isValidDateString } from "@/lib/datetime"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
@@ -30,7 +30,14 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
 
   // サーバー（既定UTC）と閲覧端末のタイムゾーンが異なっても、
   // 営業時間はJSTの壁時計時刻で揃える
-  const [currentMonth, setCurrentMonth] = useState(() => toJSTWallClock())
+  // 事前選択された日付があればその月から表示する（無ければJSTの今月）
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (isValidDateString(selectedDate)) {
+      const [y, m] = selectedDate.split("-").map(Number)
+      return new Date(y, m - 1, 1)
+    }
+    return toJSTWallClock()
+  })
   const durationHours = getPlanById(planId ?? "first-time-2h")?.durationHours ?? 3
   const [internalDate, setInternalDate] = useState(selectedDate ?? "")
   const [internalTime, setInternalTime] = useState(selectedTime ?? "")
@@ -38,6 +45,11 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
+  // 空き状況の取得完了時に、最新の選択時刻と親への通知関数を参照するためのref
+  const internalTimeRef = useRef(internalTime)
+  internalTimeRef.current = internalTime
+  const onSelectRef = useRef(onSelectDateTime)
+  onSelectRef.current = onSelectDateTime
 
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -83,6 +95,13 @@ export default function BookingCalendar({ onSelectDateTime, selectedDate, select
           return { time: hour, available: s.available }
         })
         setSlots(parsed)
+        // 選択中の時刻（URLでの事前選択など）が空き枠に無い場合（予約済み・開始済み等）は、
+        // 画面と送信内容がずれないよう、カレンダーと親の両方で時刻の選択を解除する
+        const chosen = internalTimeRef.current
+        if (chosen && !parsed.some((s) => s.available && s.time === chosen)) {
+          setInternalTime("")
+          onSelectRef.current?.(internalDate, "")
+        }
       })
       .catch(() => {
         if (cancelled) return

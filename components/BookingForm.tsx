@@ -6,6 +6,8 @@ import BookingCalendar from "@/components/BookingCalendar"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 import { track } from "@/lib/analytics"
+import { FIELD_LIMITS } from "@/lib/validation"
+import { sanitizeBookingPreselect } from "@/lib/booking-preselect"
 
 type FormState = "idle" | "submitting" | "success" | "error" | "conflict"
 
@@ -14,15 +16,18 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
   const T = t[lang]
   const TF = T.bookingForm
 
-  const [selectedDate, setSelectedDate] = useState(defaultDate ?? "")
-  const [selectedTime, setSelectedTime] = useState(defaultTime ?? "")
+  // URLで渡された事前選択は信用せず、不正・範囲外・開始済みなら未選択に戻す
+  // （予約済みの時刻は、空き状況の取得後に BookingCalendar が解除する）
+  const [preselect] = useState(() => sanitizeBookingPreselect({ plan: defaultPlan, date: defaultDate, time: defaultTime }))
+  const [selectedDate, setSelectedDate] = useState(preselect.date)
+  const [selectedTime, setSelectedTime] = useState(preselect.time)
   const [formState, setFormState] = useState<FormState>("idle")
   const [receiptNumber, setReceiptNumber] = useState("")
   // プラン変更に加えて、時間重複(409)が起きた際にもカレンダーを再マウントして
   // 最新の空き状況を取り直すためのキー
   const [calendarResetKey, setCalendarResetKey] = useState(0)
   const [form, setForm] = useState({
-    planId: defaultPlan ?? "first-time-2h",
+    planId: preselect.planId as string,
     name: "",
     email: "",
     phone: "",
@@ -33,6 +38,8 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
 
   const selectedPlan = PLANS.find((p) => p.id === form.planId)
   const submittingRef = useRef(false)
+  // 申込受付成功イベントを同じ申込（受付番号）について1回だけ送るための記録（受付番号自体は送信しない）
+  const trackedReceiptsRef = useRef(new Set<string>())
   const bookingStartedRef = useRef(false)
 
   // 同じ日時への送信操作をもう一度行った場合に、サーバー側で
@@ -66,7 +73,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       // 氏名・メール等は送信しない。「入力を始めた」ことのみ1回だけ計測する
       if (!bookingStartedRef.current && ["name", "email", "phone"].includes(name) && value) {
         bookingStartedRef.current = true
-        track("booking_start", { plan_id: form.planId })
+        track("booking_start", { plan_id: form.planId, lang })
       }
     }
   }
@@ -107,11 +114,17 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       }
       if (!res.ok) throw new Error("API error")
       const data = await res.json()
-      setReceiptNumber(data.receiptNumber ?? "")
+      // status: "pending_confirmation" ＝ APIが申込を「未確定として受け付けた」ことのみを示す。
+      // スタジオによる予約確定とは別（HTTP成功＝確定ではない）。この応答以外は成功として扱わない。
+      if (data?.status !== "pending_confirmation" || typeof data.receiptNumber !== "string") throw new Error("Unexpected response")
+      setReceiptNumber(data.receiptNumber)
       setFormState("success")
-      // status: "pending_confirmation" ＝ APIが申込を受理したことのみを示す。
-      // スタジオによる予約確定とは別（HTTP成功＝確定ではない）。
-      track("booking_submit_success", { plan_id: form.planId })
+      // 申込受付成功（予約確定ではない）。再描画・再送で同じ申込について重複送信しない。
+      // 送るのはプランと表示言語だけ（受付番号・氏名・連絡先・相談内容は送らない）。
+      if (!trackedReceiptsRef.current.has(data.receiptNumber)) {
+        trackedReceiptsRef.current.add(data.receiptNumber)
+        track("booking_submit_success", { plan_id: form.planId, lang })
+      }
     } catch {
       setFormState("error")
       submittingRef.current = false
@@ -216,6 +229,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
             <input
               type="text"
               name="name"
+              maxLength={FIELD_LIMITS.name}
               required
               value={form.name}
               onChange={handleChange}
@@ -228,6 +242,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
             <input
               type="email"
               name="email"
+              maxLength={FIELD_LIMITS.email}
               required
               value={form.email}
               onChange={handleChange}
@@ -240,6 +255,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
             <input
               type="tel"
               name="phone"
+              maxLength={FIELD_LIMITS.phone}
               required
               value={form.phone}
               onChange={handleChange}
@@ -254,6 +270,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
               <input
                 type="text"
                 name="instagram"
+                maxLength={FIELD_LIMITS.instagram}
                 value={form.instagram}
                 onChange={handleChange}
                 placeholder={TF.instagramPlaceholder}
@@ -267,6 +284,7 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
           <label className="block text-xs text-[#64748b] mb-1 font-medium">{TF.message}</label>
           <textarea
             name="message"
+            maxLength={FIELD_LIMITS.bookingMessage}
             value={form.message}
             onChange={handleChange}
             rows={4}
@@ -287,6 +305,11 @@ export default function BookingForm({ defaultPlan, defaultDate, defaultTime }: {
       >
         {formState === "submitting" ? TF.submitting : TF.submit}
       </button>
+      {(!selectedDate || !selectedTime) && (
+        <p className="text-center text-xs text-[#64748b]" role="status">
+          {TF.dateTimeRequiredHint}
+        </p>
+      )}
 
       {formState === "error" && (
         <p className="text-center text-red-500 text-sm">

@@ -14,6 +14,29 @@
 import nodemailer from "nodemailer"
 import { isLiveProductionTarget, isTestIntegrationAllowed } from "./env"
 
+/** HTMLメールへ埋め込む値の特殊文字をエスケープする（ユーザー入力は必ずこれを通す）。 */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+/** エスケープした後に改行を <br> へ変換する（順序を逆にすると <br> 自体がエスケープされる）。 */
+function escapeHtmlWithBreaks(value: string): string {
+  return escapeHtml(value).replace(/\r\n|\r|\n/g, "<br>")
+}
+
+/**
+ * 件名などメールヘッダーに入れる値から制御文字（改行を含む）を取り除く。
+ * APIの入力検証で既に拒否しているが、ヘッダーインジェクション対策として多重に防ぐ。
+ */
+function headerSafe(value: string): string {
+  return value.replace(/[\u0000-\u001F\u007F\u2028\u2029]/g, " ")
+}
+
 type EmailMode = "mock" | "test" | "live"
 
 /**
@@ -37,6 +60,8 @@ export interface BookingConfirmationData {
   isFirstTime: boolean
   instagram?: string
   message?: string
+  /** 宛先ごとの送信上限により、お客様への確認メールを省略した場合 true（管理者通知に明記する） */
+  customerConfirmationSkipped?: boolean
 }
 
 export interface ContactMessageData {
@@ -111,7 +136,7 @@ export async function sendCustomerConfirmation(data: BookingConfirmationData) {
   await transporter.sendMail({
     from: `"Wuloong Studio TOKYO" <${process.env.GMAIL_USER}>`,
     to,
-    subject: `${subjectPrefix}【Wuloong Studio TOKYO】予約申込の受付（受付番号: ${data.receiptNumber}）`,
+    subject: `${subjectPrefix}【Wuloong Studio TOKYO】予約申込の受付（受付番号: ${headerSafe(data.receiptNumber)}）`,
     html: customerHtml(data),
   })
 }
@@ -135,7 +160,7 @@ export async function sendAdminNotification(data: BookingConfirmationData) {
   await transporter.sendMail({
     from: `"Wuloong Studio 予約" <${process.env.GMAIL_USER}>`,
     to,
-    subject: `${subjectPrefix}【要確認：予約申込】${data.customerName} — ${data.planName}（受付番号: ${data.receiptNumber}）`,
+    subject: headerSafe(`${subjectPrefix}${data.customerConfirmationSkipped ? "【確認メール未送信】" : ""}【要確認：予約申込】${data.customerName} — ${data.planName}（受付番号: ${data.receiptNumber}）`),
     html: adminHtml(data),
   })
 }
@@ -159,7 +184,7 @@ export async function sendContactNotification(data: ContactMessageData) {
     from: `"Wuloong Studio お問い合わせ" <${process.env.GMAIL_USER}>`,
     to,
     replyTo: data.email,
-    subject: `${subjectPrefix}【お問い合わせ】${data.name} — ${data.subject || "件名なし"}`,
+    subject: headerSafe(`${subjectPrefix}【お問い合わせ】${data.name} — ${data.subject || "件名なし"}`),
     html: contactHtml(data),
   })
 }
@@ -169,7 +194,7 @@ function customerHtml(d: BookingConfirmationData) {
   return `
   <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#fafaf8;padding:32px;border-radius:16px;">
     <h2 style="color:#1a1a2e;font-size:20px;margin-bottom:8px;">予約のお申し込みを受け付けました</h2>
-    <p style="color:#64748b;font-size:14px;margin-top:0;">${d.customerName} 様</p>
+    <p style="color:#64748b;font-size:14px;margin-top:0;">${escapeHtml(d.customerName)} 様</p>
 
     <div style="background:#fff3cd;border-radius:10px;padding:14px 18px;margin:16px 0;border:1px solid #f0d58c;">
       <p style="font-size:13px;color:#7a5c00;margin:0;line-height:1.7;">
@@ -180,9 +205,9 @@ function customerHtml(d: BookingConfirmationData) {
 
     <div style="background:#fff;border-radius:12px;padding:20px;margin:20px 0;border:1px solid #e2e8f0;">
       <table style="width:100%;font-size:14px;color:#4a5568;border-collapse:collapse;">
-        <tr><td style="padding:6px 0;color:#94a3b8;width:100px;">受付番号</td><td style="font-weight:600;">${d.receiptNumber}</td></tr>
-        <tr><td style="padding:6px 0;color:#94a3b8;">プラン</td><td style="font-weight:600;">${d.planName}</td></tr>
-        <tr><td style="padding:6px 0;color:#94a3b8;">希望日時</td><td style="font-weight:600;">${d.date} ${d.time}〜（日本時間）</td></tr>
+        <tr><td style="padding:6px 0;color:#94a3b8;width:100px;">受付番号</td><td style="font-weight:600;">${escapeHtml(d.receiptNumber)}</td></tr>
+        <tr><td style="padding:6px 0;color:#94a3b8;">プラン</td><td style="font-weight:600;">${escapeHtml(d.planName)}</td></tr>
+        <tr><td style="padding:6px 0;color:#94a3b8;">希望日時</td><td style="font-weight:600;">${escapeHtml(d.date)} ${escapeHtml(d.time)}〜（日本時間）</td></tr>
         <tr><td style="padding:6px 0;color:#94a3b8;">初回利用</td><td>${d.isFirstTime ? "はい" : "いいえ"}</td></tr>
       </table>
     </div>
@@ -194,15 +219,15 @@ function customerHtml(d: BookingConfirmationData) {
 
     <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
 
-    <p style="font-size:13px;color:#64748b;line-height:1.8;">Thank you, ${d.customerName}. We've received your booking application.</p>
+    <p style="font-size:13px;color:#64748b;line-height:1.8;">Thank you, ${escapeHtml(d.customerName)}. We've received your booking application.</p>
     <p style="font-size:13px;color:#4a5568;line-height:1.8;">
       This is <strong>not yet confirmed</strong>. We'll check availability and contact you to confirm.
       If we can't accommodate your requested time, we'll suggest alternative dates.
     </p>
     <p style="font-size:13px;color:#4a5568;line-height:1.8;">
-      Receipt number: ${d.receiptNumber}<br>
-      Plan: ${d.planName}<br>
-      Requested date/time: ${d.date} ${d.time} (Japan time)
+      Receipt number: ${escapeHtml(d.receiptNumber)}<br>
+      Plan: ${escapeHtml(d.planName)}<br>
+      Requested date/time: ${escapeHtml(d.date)} ${escapeHtml(d.time)} (Japan time)
     </p>
 
     <p style="font-size:12px;color:#94a3b8;margin-top:32px;">
@@ -221,14 +246,15 @@ function adminHtml(d: BookingConfirmationData) {
       対応できる場合のみカレンダー上で確定に変更の上、お客様へ手動でご連絡ください。
     </p>
     <table style="width:100%;font-size:14px;color:#4a5568;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;">
-      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;width:120px;">受付番号</td><td style="padding:10px;">${d.receiptNumber}</td></tr>
-      <tr><td style="padding:10px;font-weight:600;">プラン</td><td style="padding:10px;">${d.planName}</td></tr>
-      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">希望日時</td><td style="padding:10px;">${d.date} ${d.time}〜（日本時間）</td></tr>
-      <tr><td style="padding:10px;font-weight:600;">お名前</td><td style="padding:10px;">${d.customerName}</td></tr>
-      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">メール</td><td style="padding:10px;">${d.customerEmail}</td></tr>
-      <tr><td style="padding:10px;font-weight:600;">Instagram</td><td style="padding:10px;">${d.instagram ? "@" + d.instagram : "—"}</td></tr>
+      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;width:120px;">受付番号</td><td style="padding:10px;">${escapeHtml(d.receiptNumber)}</td></tr>
+      <tr><td style="padding:10px;font-weight:600;">プラン</td><td style="padding:10px;">${escapeHtml(d.planName)}</td></tr>
+      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">希望日時</td><td style="padding:10px;">${escapeHtml(d.date)} ${escapeHtml(d.time)}〜（日本時間）</td></tr>
+      <tr><td style="padding:10px;font-weight:600;">お名前</td><td style="padding:10px;">${escapeHtml(d.customerName)}</td></tr>
+      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">メール</td><td style="padding:10px;">${escapeHtml(d.customerEmail)}</td></tr>
+      <tr><td style="padding:10px;font-weight:600;">Instagram</td><td style="padding:10px;">${d.instagram ? "@" + escapeHtml(d.instagram) : "—"}</td></tr>
       <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">初回</td><td style="padding:10px;">${d.isFirstTime ? "はい ⭐" : "いいえ"}</td></tr>
-      ${d.message ? `<tr><td style="padding:10px;font-weight:600;vertical-align:top;">メッセージ</td><td style="padding:10px;">${d.message}</td></tr>` : ""}
+      ${d.customerConfirmationSkipped ? `<tr><td style="padding:10px;font-weight:600;vertical-align:top;color:#b45309;">確認メール</td><td style="padding:10px;color:#b45309;">同じ宛先への送信上限のため、お客様への確認メールは送信していません。必要に応じて手動でご連絡ください。</td></tr>` : ""}
+      ${d.message ? `<tr><td style="padding:10px;font-weight:600;vertical-align:top;">メッセージ</td><td style="padding:10px;">${escapeHtmlWithBreaks(d.message)}</td></tr>` : ""}
     </table>
   </div>
   `
@@ -239,10 +265,10 @@ function contactHtml(d: ContactMessageData) {
   <div style="font-family:sans-serif;max-width:520px;margin:0 auto;">
     <h2 style="color:#1a1a2e;">✉️ お問い合わせフォームより</h2>
     <table style="width:100%;font-size:14px;color:#4a5568;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;">
-      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;width:100px;">お名前</td><td style="padding:10px;">${d.name}</td></tr>
-      <tr><td style="padding:10px;font-weight:600;">メール</td><td style="padding:10px;">${d.email}</td></tr>
-      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">件名</td><td style="padding:10px;">${d.subject || "—"}</td></tr>
-      <tr><td style="padding:10px;font-weight:600;vertical-align:top;">メッセージ</td><td style="padding:10px;white-space:pre-wrap;">${d.message}</td></tr>
+      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;width:100px;">お名前</td><td style="padding:10px;">${escapeHtml(d.name)}</td></tr>
+      <tr><td style="padding:10px;font-weight:600;">メール</td><td style="padding:10px;">${escapeHtml(d.email)}</td></tr>
+      <tr style="background:#f8f9ff;"><td style="padding:10px;font-weight:600;">件名</td><td style="padding:10px;">${escapeHtml(d.subject) || "—"}</td></tr>
+      <tr><td style="padding:10px;font-weight:600;vertical-align:top;">メッセージ</td><td style="padding:10px;">${escapeHtmlWithBreaks(d.message)}</td></tr>
     </table>
   </div>
   `

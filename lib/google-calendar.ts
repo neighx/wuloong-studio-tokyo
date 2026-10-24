@@ -1,5 +1,6 @@
 import { google } from "googleapis"
 import { isLiveProductionTarget, isTestIntegrationAllowed } from "./env"
+import { studioStartHours } from "./booking-slots"
 
 export interface TimeSlot {
   start: string
@@ -117,7 +118,7 @@ export async function getAvailableSlots(date: string, durationHours: number): Pr
   // 確定済みイベントだけでなく「[予約申込・未確定]」の仮イベントも busy として扱う。
   // 申込時点で枠の確保を保証するわけではないが、同じ枠へ次々と競合する申込が
   // 積み重なるのを避けるための運用判断（詳細はdocs/booking-confirmation-runbook.md）。
-  const busyTimes: { start: string; end: string }[] =
+  const busyTimes: BusyTime[] =
     (res.data.items ?? []).map((e: any) => ({
       start: e.start?.dateTime ?? e.start?.date,
       end:   e.end?.dateTime   ?? e.end?.date,
@@ -209,12 +210,12 @@ export async function findBookingByReceipt(
 const NOTIFICATION_FAILED_MARKER = "⚠️ 通知メール送信失敗"
 
 /**
- * カレンダー登録には成功したが、確認メールの送信に失敗した場合に呼ぶ。
- * イベントの説明欄に目印を追記し、スタッフがカレンダーを見るだけで
+ * カレンダー登録には成功したが、確認メールの省略・送信失敗、または管理者通知の失敗があった場合に呼ぶ。
+ * イベントの説明欄に目印と理由（reason）を追記し、スタッフがカレンダーを見るだけで
  * 「このお客様には連絡が届いていない可能性がある」と分かるようにする
  * （新しい管理画面やDBを使わず、既存のカレンダーだけで記録する）。
  */
-export async function markNotificationFailed(eventId: string, receiptNumber: string): Promise<void> {
+export async function markNotificationFailed(eventId: string, receiptNumber: string, reason: string): Promise<void> {
   const mode = getCalendarMode()
 
   // この関数はどのモードでも例外を外へ投げない。カレンダーへの追記（記録）自体が
@@ -232,7 +233,7 @@ export async function markNotificationFailed(eventId: string, receiptNumber: str
       }
       const entry = mockReceiptIndex.get(receiptNumber)
       if (entry) entry.notificationFailed = true
-      console.warn("[mock] notification failed for receipt", receiptNumber, eventId)
+      console.warn("[mock] notification failed for receipt", receiptNumber, eventId, reason)
       return
     }
 
@@ -243,7 +244,7 @@ export async function markNotificationFailed(eventId: string, receiptNumber: str
     await (calendar as any).events.patch({
       calendarId,
       eventId,
-      requestBody: { description: `${NOTIFICATION_FAILED_MARKER}（スタッフが手動で顧客へご連絡ください）\n${description}` },
+      requestBody: { description: `${NOTIFICATION_FAILED_MARKER}（${reason}。スタッフが手動で顧客へご連絡ください）\n${description}` },
     })
   } catch (error) {
     // カレンダーへの追記自体が失敗しても、予約受付そのものの成功を取り消さない。
@@ -269,33 +270,60 @@ function buildDescription(booking: BookingEvent, receiptNumber: string): string 
     .join("\n")
 }
 
-const STUDIO_OPEN_HOUR = 10
-const STUDIO_CLOSE_HOUR = 22
+// 予約枠（営業時間・開始時刻）の定義はクライアントと共用するため lib/booking-slots.ts に置く
+export { isAllowedStartTime } from "./booking-slots"
 
-function studioStartHours(durationHours: number): number[] {
-  const starts: number[] = []
-  for (let h = STUDIO_OPEN_HOUR; h + durationHours <= STUDIO_CLOSE_HOUR; h++) starts.push(h)
-  return starts
+/** カレンダーの予定の開始・終了（dateTime: 任意のオフセット付き日時、date: 終日予定の "YYYY-MM-DD"） */
+export interface BusyTime {
+  start: string | undefined
+  end: string | undefined
 }
 
+/**
+ * Googleカレンダーの日時をUTCミリ秒に変換する。dateTime は "…Z" や "…+09:00" などオフセットが
+ * 何であっても同じ時刻なら同じ値になる（文字列のまま比較すると表記差で重なりを見落とすため）。
+ * 終日予定の日付（"YYYY-MM-DD"）はスタジオの所在地（JST）の0:00として扱う。変換できなければ null。
+ */
+export function toEpochMs(value: string | undefined | null): number | null {
+  if (!value) return null
+  const ms = Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00+09:00` : value)
+  return Number.isNaN(ms) ? null : ms
+}
+
+/**
+ * 指定日の予約枠と空き状況を返す。
+ * - 予定との重なりは時刻の数値で判定する（終了時刻＝開始時刻の隣接は重なりではない）。
+ *   終日予定の終了日はGoogleカレンダーの仕様どおり「その日を含まない」。
+ * - 日時を解析できない予定がある日は、二重予約を避けるため全枠を空きなしとして扱う。
+ * - 開始時刻を過ぎた枠（当日の開始済みの枠）は一覧から除く。
+ */
 export function computeAvailableSlots(
   date: string,
-  busyTimes: { start: string; end: string }[],
-  durationHours: number
+  busyTimes: BusyTime[],
+  durationHours: number,
+  now: number = Date.now()
 ): TimeSlot[] {
-  return studioStartHours(durationHours).map((hour) => {
-    const start = `${date}T${String(hour).padStart(2, "0")}:00:00+09:00`
-    const end   = `${date}T${String(hour + durationHours).padStart(2, "0")}:00:00+09:00`
-    const busy  = busyTimes.some((b) => b.start < end && b.end > start)
-    return { start, end, available: !busy }
-  })
+  const busy = busyTimes.map((b) => ({ start: toEpochMs(b.start), end: toEpochMs(b.end) }))
+  const hasUnparsable = busy.some((b) => b.start === null || b.end === null)
+  if (hasUnparsable) console.warn("[calendar] An event with an unparsable start/end was found; treating the day as unavailable:", date)
+  return studioStartHours(durationHours)
+    .map((hour) => {
+      const start = `${date}T${String(hour).padStart(2, "0")}:00:00+09:00`
+      const end   = `${date}T${String(hour + durationHours).padStart(2, "0")}:00:00+09:00`
+      const startMs = Date.parse(start)
+      const endMs = Date.parse(end)
+      const overlaps = hasUnparsable || busy.some((b) => (b.start as number) < endMs && (b.end as number) > startMs)
+      return { start, end, startMs, available: !overlaps }
+    })
+    .filter((s) => s.startMs > now)
+    .map(({ start, end, available }) => ({ start, end, available }))
 }
 
 function generateMockSlots(date: string, durationHours: number): TimeSlot[] {
   // mockBookedSlotsにある申込済み開始時刻を、今回問い合わせ中のdurationHoursで
   // 占有しているものとして扱う（プラン毎に所要時間が異なる将来の拡張時は
   // 申込時のdurationHoursも保存する形に見直すこと）
-  const busyTimes = Array.from(mockBookedSlots)
+  const busyTimes: BusyTime[] = Array.from(mockBookedSlots)
     .filter((start) => start.startsWith(date))
     .map((start) => {
       const hour = parseInt(start.slice(11, 13), 10)

@@ -5,6 +5,7 @@ import {
   findBookingByReceipt,
   markNotificationFailed,
   assertCalendarConfigured,
+  isAllowedStartTime,
   type BookingEvent,
 } from "@/lib/google-calendar"
 import { sendCustomerConfirmation, sendAdminNotification, assertEmailConfigured } from "@/lib/email"
@@ -12,7 +13,9 @@ import { getPlanById, type PlanId } from "@/lib/pricing"
 import { runExclusive } from "@/lib/slot-lock"
 import { getCachedBookingResult, cacheBookingResult } from "@/lib/idempotency-store"
 import { computeReceiptNumber } from "@/lib/receipt"
-import { getJSTDateString, getEndOfNextMonth } from "@/lib/datetime"
+import { getJSTDateString, getEndOfNextMonth, isValidDateString } from "@/lib/datetime"
+import { validateBookingInput } from "@/lib/validation"
+import { checkRateLimit, bookingRateLimitRules, getClientIp, reserveConfirmationEmailQuota } from "@/lib/rate-limit"
 
 export interface BookingRequest {
   planId: string
@@ -53,27 +56,26 @@ function applicationReceivedResponse(receiptNumber: string, eventId: string) {
  * ここでは確定通知・カレンダー招待は送らない。
  */
 export async function POST(req: NextRequest) {
-  let body: BookingRequest
+  let rawBody: unknown
 
   try {
-    body = await req.json()
+    rawBody = await req.json()
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
   }
 
-  const required = ["planId", "planName", "date", "time", "customerName", "customerEmail", "customerPhone"]
-  const missing = required.filter((key) => !body[key as keyof BookingRequest])
-
-  if (missing.length > 0) {
-    return NextResponse.json({ error: `Missing required fields: ${missing.join(", ")}` }, { status: 400 })
+  // 型・必須・文字数・メール形式・制御文字（改行等）をまとめて検証する（lib/validation.ts）。
+  // ここで弾いた入力は、カレンダー照会・登録やメール送信には一切進まない。
+  const validation = validateBookingInput(rawBody)
+  if (!validation.ok) {
+    return NextResponse.json({ error: validation.error }, { status: 400 })
   }
+  const body: BookingRequest = validation.value
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date)) {
-    return NextResponse.json({ error: "Invalid date format. Use YYYY-MM-DD" }, { status: 400 })
-  }
-
-  if (!/^\d{2}:\d{2}$/.test(body.time)) {
-    return NextResponse.json({ error: "Invalid time format. Use HH:mm" }, { status: 400 })
+  // "2026-11-31" のような実在しない日付は、Dateが翌日へ繰り上げて別の日の
+  // 予定を照会してしまうため、受付期間の判定より前に拒否する。
+  if (!isValidDateString(body.date)) {
+    return NextResponse.json({ error: "Invalid date. Use an existing date in YYYY-MM-DD" }, { status: 400 })
   }
 
   // Web予約は常に「翌月末日」までを受付期間とする。月初（JST 0:00）を
@@ -101,6 +103,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Unknown planId: ${body.planId}` }, { status: 400 })
   }
 
+  // 営業時間外・正時以外など、予約枠として存在しない開始時刻は空き状況の競合（409）と
+  // 区別して400で拒否する。枠の定義は空き状況APIと同じもの（lib/google-calendar.ts）を使う。
+  if (!isAllowedStartTime(body.time, plan.durationHours)) {
+    return NextResponse.json({ error: "Requested time is not an available booking slot" }, { status: 400 })
+  }
+
+  // 開始時刻を過ぎた枠（当日の開始済みの時刻）は受け付けない。空き状況APIでも一覧から除いている。
+  const startDateTime = `${body.date}T${body.time}:00+09:00`
+  if (Date.parse(startDateTime) <= Date.now()) {
+    return NextResponse.json({ error: "Requested time has already started" }, { status: 400 })
+  }
+
+  // カレンダー照会/登録・メール送信より前に、送信元IPの受付回数を制限する（lib/rate-limit.ts）。
+  // 宛先アドレス単位の制限はここでは行わない（他人のアドレスを指定して、その人の予約を
+  // 拒否させられないようにするため）。宛先単位の制限は確認メールの送信直前に行う。
+  const rateLimit = await checkRateLimit(bookingRateLimitRules(getClientIp(req.headers)))
+  if (rateLimit.limited) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
+    )
+  }
+
   // この環境（mock/test/live）で予約連携に必要な設定が揃っているかを先に確認する。
   // 揃っていない場合はここで明示的に失敗させる（モックの成功で隠さない）。
   try {
@@ -114,7 +139,6 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const startDateTime = `${body.date}T${body.time}:00+09:00`
   const durationHours = plan.durationHours
   const endHour = parseInt(body.time.split(":")[0]) + durationHours
   const endDateTime = `${body.date}T${String(endHour).padStart(2, "0")}:${body.time.split(":")[1]}:00+09:00`
@@ -181,12 +205,31 @@ export async function POST(req: NextRequest) {
     // 時間帯が重なるリクエスト同士の競合も直列化の対象になる
     // （プロセス内のみの直列化。範囲はlib/slot-lock.ts参照）。
     const result = await runExclusive(`studio:${body.date}`, async () => {
+      // 排他処理の中でも受付番号を再確認する。同じ申込が同時に再送された場合、
+      // 先に登録された自分の申込を「他の申込との競合（409）」と誤判定しないようにする。
+      // （同一プロセス内では確実。別インスタンスでは、先の登録がカレンダーに反映済みの場合のみ検出できる）
+      if (idempotencyKey) {
+        const cached = getCachedBookingResult(receiptNumber)
+        if (cached) return { conflict: false as const, duplicate: true as const, id: cached.eventId }
+        try {
+          const existing = await findBookingByReceipt(body.date, receiptNumber)
+          if (existing) return { conflict: false as const, duplicate: true as const, id: existing.eventId }
+        } catch (error) {
+          console.error("[bookings] Receipt re-check inside lock failed, continuing:", receiptNumber, error)
+        }
+      }
       const stillAvailable = await isSlotStillAvailable(body.date, startDateTime, durationHours)
       if (!stillAvailable) return { conflict: true as const }
       const id = await createBookingEvent(bookingEvent, receiptNumber)
-      return { conflict: false as const, id }
+      // 排他処理を抜ける前に記録し、直後に同じ申込が排他処理へ入っても既存結果を返せるようにする
+      if (idempotencyKey) cacheBookingResult(receiptNumber, id)
+      return { conflict: false as const, duplicate: false as const, id }
     })
 
+    if (!result.conflict && result.duplicate) {
+      // 同じ申込の再送：登録・メール送信は行わず、最初の受付結果をそのまま返す
+      return applicationReceivedResponse(receiptNumber, result.id)
+    }
     if (result.conflict) {
       return NextResponse.json(
         { error: "この時間帯は他のお申し込みが入っています。別の時間をお選びください。" },
@@ -203,18 +246,33 @@ export async function POST(req: NextRequest) {
   // ここまでで「申込の受付（カレンダー保存）」自体は成功している。
   // 以降のメール送信が失敗しても、申込自体を失敗扱いにはしない
   // （再送を促さない。受付番号は返し、通知失敗はカレンダー側に記録する）。
-  if (idempotencyKey) cacheBookingResult(receiptNumber, eventId)
+  // 確認メールを送る直前に、宛先ごとの送信枠を1通分確保する。入力エラー・予約競合・
+  // 再送（既存結果の返却）はここまで到達しないため、宛先の送信枠を消費しない。
+  // 枠が無い場合は確認メールだけを省略し、申込自体は受付済みとして扱う。
+  let confirmationAllowed: boolean
+  try {
+    confirmationAllowed = (await reserveConfirmationEmailQuota(body.customerEmail)).allowed
+  } catch (error) {
+    // 想定外の失敗時は、送信の悪用を防ぐ側（確認メールを省略）に倒す
+    console.error("[bookings] Failed to reserve confirmation email quota; skipping confirmation:", receiptNumber, error)
+    confirmationAllowed = false
+  }
+  if (!confirmationAllowed) {
+    console.warn("[bookings] Confirmation email skipped (per-recipient limit reached):", receiptNumber)
+  }
 
   const emailResults = await Promise.allSettled([
-    sendCustomerConfirmation({
-      receiptNumber,
-      customerName: body.customerName,
-      customerEmail: body.customerEmail,
-      planName: plan.name,
-      date: body.date,
-      time: body.time,
-      isFirstTime: body.isFirstTime,
-    }),
+    confirmationAllowed
+      ? sendCustomerConfirmation({
+          receiptNumber,
+          customerName: body.customerName,
+          customerEmail: body.customerEmail,
+          planName: plan.name,
+          date: body.date,
+          time: body.time,
+          isFirstTime: body.isFirstTime,
+        })
+      : Promise.resolve(),
     sendAdminNotification({
       receiptNumber,
       customerName: body.customerName,
@@ -225,21 +283,30 @@ export async function POST(req: NextRequest) {
       isFirstTime: body.isFirstTime,
       instagram: body.customerInstagram,
       message: body.message,
+      customerConfirmationSkipped: !confirmationAllowed,
     }),
   ])
 
-  const anyEmailFailed = emailResults.some((r) => r.status === "rejected")
-  emailResults.forEach((r) => {
-    if (r.status === "rejected") console.error("[bookings] Email send failed:", receiptNumber, r.reason)
-  })
-  if (anyEmailFailed) {
+  // スタッフが把握すべき通知の問題をまとめる。管理者通知が成功していても、
+  // お客様への確認メールが省略・失敗していれば記録する（成功扱いにしない）。
+  const notificationIssues: string[] = []
+  if (!confirmationAllowed) notificationIssues.push("お客様への確認メールは同じ宛先への送信上限のため未送信")
+  if (emailResults[0].status === "rejected") {
+    console.error("[bookings] Customer confirmation email failed:", receiptNumber, emailResults[0].reason)
+    notificationIssues.push("お客様への確認メールの送信に失敗")
+  }
+  if (emailResults[1].status === "rejected") {
+    console.error("[bookings] Admin notification email failed:", receiptNumber, emailResults[1].reason)
+    notificationIssues.push("スタジオへの通知メールの送信に失敗")
+  }
+  if (notificationIssues.length > 0) {
     // 実際には送れていないメールを「送信済み」と見せない。
-    // カレンダー側に目印を残し、スタッフが手動で連絡状況を確認できるようにする。
+    // カレンダー側に目印と理由を残し、スタッフが手動で連絡状況を確認できるようにする。
     // markNotificationFailed自体は例外を投げない設計だが、万一想定外の例外が
     // 外へ漏れてもここで吸収し、受付済みの申込を失敗扱いにしない。
     // （追記できなかった事実は必ずログへ残す）
     try {
-      await markNotificationFailed(eventId, receiptNumber)
+      await markNotificationFailed(eventId, receiptNumber, notificationIssues.join(" / "))
     } catch (error) {
       console.error(
         "[bookings] Unexpected error while recording notification failure (booking remains accepted):",

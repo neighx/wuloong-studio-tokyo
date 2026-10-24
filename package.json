@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:booking": "node --import ./tests/support/register.mjs --test tests/booking-datetime.test.mjs"
+    "test:booking": "node --import ./tests/support/register.mjs --test tests/booking-datetime.test.mjs tests/booking-api.test.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.40.0",

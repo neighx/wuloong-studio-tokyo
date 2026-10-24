@@ -6,7 +6,7 @@ const content = {
   ja: {
     eyebrow: "PRIVACY POLICY",
     title: "プライバシーポリシー",
-    lastUpdated: "最終更新日：2026年10月4日",
+    lastUpdated: "最終更新日：2026年10月25日",
     sections: [
       {
         title: "取得する情報",
@@ -39,7 +39,13 @@ const content = {
       },
       {
         title: "Cookie・アクセス解析について",
-        body: "本サイトでは、現時点でアクセス解析ツールや広告トラッキングは導入していません。表示言語（日本語／English）の選択のみ、お使いのブラウザのlocalStorageに保存します。これは解析目的ではなく、再訪問時に選択済みの言語を表示するためのものです。今後アクセス解析などを導入する場合は、本ページを更新してお知らせします。",
+        body: "本サイトでは、サイトの利用状況を把握して改善に役立てるため、Google LLCが提供するアクセス解析ツール「Google アナリティクス」を利用しています。Google アナリティクスはCookieを使用し、氏名などで個人を特定しない形で、次のような情報を収集します。",
+        bullets: [
+          "閲覧したページ、閲覧日時、参照元（どのページやサイトから来たか）",
+          "ご利用の端末・ブラウザの種類、おおよその地域などの情報",
+          "予約フォームへの入力を始めたこと、予約のお申し込みを受け付けたこと（選択したプランと表示言語のみ）",
+        ],
+        note: "予約・お問い合わせフォームに入力された氏名、メールアドレス、電話番号、Instagram ID、ご相談内容、受付番号はGoogle アナリティクスへ送信しません。収集されたデータはGoogle社のプライバシーポリシー（https://policies.google.com/technologies/partner-sites）に基づいて管理されます。Google アナリティクスによる収集は、ブラウザのCookieを無効にするか、Google アナリティクス オプトアウト アドオン（https://tools.google.com/dlpage/gaoptout）を利用することで停止できます。本サイトでは現時点で広告配信のためのトラッキングは行っていません。今後、広告の効果測定などに利用する場合は、本ページを更新してお知らせします。また、表示言語（日本語／English）の選択は、再訪問時に同じ言語で表示するため、お使いのブラウザのlocalStorageに保存します。",
       },
       {
         title: "保存期間について",
@@ -62,7 +68,7 @@ const content = {
   en: {
     eyebrow: "PRIVACY POLICY",
     title: "Privacy Policy",
-    lastUpdated: "Last updated: October 4, 2026",
+    lastUpdated: "Last updated: October 25, 2026",
     sections: [
       {
         title: "Information We Collect",
@@ -95,7 +101,13 @@ const content = {
       },
       {
         title: "Cookies & Analytics",
-        body: "This site does not currently use any analytics or advertising tracking tools. The only thing saved in your browser's localStorage is your selected display language (Japanese / English), which is used only to remember your preference on return visits, not for analytics. If analytics tools are introduced in the future, this page will be updated.",
+        body: "To understand how this site is used and improve it, we use Google Analytics, an analytics service provided by Google LLC. Google Analytics uses cookies and collects information such as the following, without identifying you by name:",
+        bullets: [
+          "Pages viewed, time of visit, and referrer (which page or site you came from)",
+          "Device and browser type, approximate region, and similar technical information",
+          "That you started filling in the booking form, and that your booking request was received (only the selected plan and display language)",
+        ],
+        note: "We do not send your name, email address, phone number, Instagram ID, message, or receipt number from the booking or inquiry forms to Google Analytics. Collected data is handled under Google's privacy policy (https://policies.google.com/technologies/partner-sites). You can stop collection by disabling cookies in your browser or by using the Google Analytics Opt-out Browser Add-on (https://tools.google.com/dlpage/gaoptout). We do not currently use tracking for ad delivery; if we start using it for purposes such as measuring advertising, this page will be updated. Your selected display language (Japanese / English) is also saved in your browser's localStorage so the site can show the same language on return visits.",
       },
       {
         title: "Data Retention",
