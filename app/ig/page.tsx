@@ -72,7 +72,7 @@ export default function InstagramLandingPage() {
             { icon: "✓", text: "女性1人でも安心" },
             { icon: "✓", text: "初めてでも大丈夫" },
             { icon: "✓", text: "完全予約制" },
-            { icon: "✓", text: "手ぶらでOK" },
+            { icon: "✓", text: "準備ができていない方は事前にご相談ください" },
           ].map((item) => (
             <div
               key={item.text}

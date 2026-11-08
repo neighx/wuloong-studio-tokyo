@@ -342,6 +342,10 @@ export const t = {
       title: "歌詞がまだなくても、",
       titleHighlight: "はじめてでも大丈夫。",
       subtitle: "スタジオに入ったことがなくても安心です。歌詞はあればお持ちください。未完成でも、歌詞がなくてもご利用いただけます。曲のイメージや歌いたい雰囲気を一緒に整理しながら、録音の流れに沿って丁寧にサポートします。",
+      offerPrice: "初回限定{hours}時間{price}円（税込）",
+      offerPoints: ["エンジニアのサポート付き", "録音データをWAVでお渡し", "MIX／マスタリングは別料金"],
+      btnAvailability: "空き日時を見て申し込む",
+      btnConsultRecording: "録音内容を相談する",
       safetyPoints: [
         { icon: "📝", title: "歌詞がなくてもOK", desc: "曲のイメージがまだ固まっていなくても大丈夫です。歌詞がなくてもご相談いただけます。" },
         { icon: "🎙️", title: "録音の進め方を一緒に確認", desc: "どこから録るか、何回録るか、どう重ねるかを相談しながら進めます。分からないことはその場で聞けます。" },
@@ -376,7 +380,7 @@ export const t = {
         { q: "予算が少なくて不安です", a: "初回体験は3時間12,000円（税込）です。まずは体験してみて、続けるかどうか考えていただいて大丈夫です。" },
       ],
       ctaTitle: "まずは1曲録ってみよう。",
-      ctaSubtitle: "初回体験は3時間12,000円（税込）。準備ゼロでも大丈夫です。",
+      ctaSubtitle: "初回体験は3時間12,000円（税込）。準備ができていない方は事前にご相談ください。",
       btnBook: "初回体験を予約する",
       btnConsult: "まずは相談する",
     },
@@ -781,7 +785,7 @@ export const t = {
     faqItems: [
       {
         q: "Is it okay if I've never been in a recording studio?",
-        a: "Absolutely. Our engineer walks you through everything — mic setup, how to approach your takes, all of it. Come as you are.",
+        a: "Absolutely. Our engineer walks you through everything — mic setup, how to approach your takes, all of it. If you haven't prepared yet, please contact us in advance.",
       },
       {
         q: "Is it safe for women coming alone?",
@@ -935,7 +939,7 @@ export const t = {
       flowSteps: [
         "Submit a request through the booking form",
         "We'll confirm by email or DM",
-        "Just come by — no need to prepare anything special",
+        "Come by on the day — if you haven't prepared yet, please contact us in advance",
       ],
       btnBook: "Book Now",
       btnContact: "Ask About the Location",
@@ -945,6 +949,10 @@ export const t = {
       title: "No lyrics yet?",
       titleHighlight: "You're still welcome here.",
       subtitle: "Never been in a studio? No problem. Bring your lyrics if you have them — it's fine to come without. We'll work through your song's vibe together, step by step, supporting you the whole way.",
+      offerPrice: "First-session rate: {hours} hours, ¥{price} (tax included)",
+      offerPoints: ["Engineer support included", "Recording delivered as a WAV file", "Mixing/mastering sold separately"],
+      btnAvailability: "Check Availability & Apply",
+      btnConsultRecording: "Talk to Us About Your Recording",
       safetyPoints: [
         { icon: "📝", title: "No lyrics? That's okay too", desc: "Even if your song idea isn't fully formed, that's fine — we'll shape it together from whatever you bring." },
         { icon: "🎙️", title: "We map out the recording together", desc: "What to record first, how many takes, how to layer — we figure it out as we go. Ask anything, anytime." },
@@ -979,7 +987,7 @@ export const t = {
         { q: "I'm worried about my budget.", a: "The first session is ¥12,000 for 3 hours, tax included. Try it once, then decide if you want to continue — no pressure either way." },
       ],
       ctaTitle: "Let's record your first song.",
-      ctaSubtitle: "First sessions are ¥12,000 for 3 hours, tax included. Come as you are — zero prep required.",
+      ctaSubtitle: "First sessions are ¥12,000 for 3 hours, tax included. If you haven't prepared yet, please contact us in advance.",
       btnBook: "Book Your First Session",
       btnConsult: "Just Ask a Question First",
     },

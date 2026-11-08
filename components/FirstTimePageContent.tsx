@@ -5,12 +5,19 @@ import CTASection from "@/components/CTASection"
 import FAQ from "@/components/FAQ"
 import PlanGuide from "@/components/PlanGuide"
 import FirstTimeKeyFacts from "@/components/FirstTimeKeyFacts"
+import { getPlanById } from "@/lib/pricing"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
 export default function FirstTimePageContent() {
   const { lang } = useLang()
   const T = t[lang].firstTimePage
+
+  // 料金・時間・予約先は lib/pricing.ts の初回プラン定義を参照する（文言側に金額を持たない）
+  const firstTimePlan = getPlanById("first-time-2h")!
+  const offerPrice = T.offerPrice
+    .replace("{hours}", String(firstTimePlan.durationHours))
+    .replace("{price}", firstTimePlan.price.replace("¥", ""))
 
   return (
     <>
@@ -25,6 +32,28 @@ export default function FirstTimePageContent() {
           <p className="section-subtitle max-w-xl mx-auto">
             {T.subtitle}
           </p>
+
+          {/* 初回プランの要点と、申し込み・相談の導線 */}
+          <div className="glass-card rounded-2xl p-6 max-w-xl mx-auto mt-8">
+            <ul className="space-y-1.5 text-left">
+              {[offerPrice, ...T.offerPoints].map((point, i) => (
+                <li
+                  key={point}
+                  className={`flex gap-2 ${i === 0 ? "font-bold text-[#1a1a2e]" : "text-sm text-[#4a5568]"}`}
+                >
+                  <span className="text-[#6b9fd4]">·</span>{point}
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <Link href={firstTimePlan.ctaHref} className="btn-primary text-sm">
+                {T.btnAvailability}
+              </Link>
+              <Link href="/contact" className="btn-secondary text-sm">
+                {T.btnConsultRecording}
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
