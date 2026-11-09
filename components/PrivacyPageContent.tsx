@@ -6,7 +6,7 @@ const content = {
   ja: {
     eyebrow: "PRIVACY POLICY",
     title: "プライバシーポリシー",
-    lastUpdated: "最終更新日：2026年10月25日",
+    lastUpdated: "最終更新日：2026年11月9日",
     sections: [
       {
         title: "取得する情報",
@@ -38,14 +38,25 @@ const content = {
         note: "各サービスの取り扱いについては、Google社のプライバシーポリシーもご確認ください。",
       },
       {
-        title: "Cookie・アクセス解析について",
-        body: "本サイトでは、サイトの利用状況を把握して改善に役立てるため、Google LLCが提供するアクセス解析ツール「Google アナリティクス」を利用しています。Google アナリティクスはCookieを使用し、氏名などで個人を特定しない形で、次のような情報を収集します。",
+        title: "Cookie・アクセス解析・広告の効果測定について",
+        body: "本サイトでは、サイトの利用状況を把握して改善に役立てるため、Google LLCが提供するアクセス解析ツール「Google アナリティクス（GA4）」を利用しています。また、Google 広告を利用する際は、広告の効果を測定するため、Google アナリティクスとGoogle 広告を連携します。これらの計測ではCookieや、広告をクリックしたときにURLへ付与される識別子（gclidなど）を利用し、次のような情報を収集します。",
         bullets: [
           "閲覧したページ、閲覧日時、参照元（どのページやサイトから来たか）",
           "ご利用の端末・ブラウザの種類、おおよその地域などの情報",
-          "予約フォームへの入力を始めたこと、予約のお申し込みを受け付けたこと（選択したプランと表示言語のみ）",
+          "広告をクリックして訪問した場合の、広告クリックに関する情報",
+          "ページのスクロールや外部リンクのクリック、プランの選択、相談リンクのクリックなど、サイト内での操作",
+          "予約フォームへの入力を始めたこと、予約のお申し込みを受け付けたこと",
         ],
-        note: "予約・お問い合わせフォームに入力された氏名、メールアドレス、電話番号、Instagram ID、ご相談内容、受付番号はGoogle アナリティクスへ送信しません。収集されたデータはGoogle社のプライバシーポリシー（https://policies.google.com/technologies/partner-sites）に基づいて管理されます。Google アナリティクスによる収集は、ブラウザのCookieを無効にするか、Google アナリティクス オプトアウト アドオン（https://tools.google.com/dlpage/gaoptout）を利用することで停止できます。本サイトでは現時点で広告配信のためのトラッキングは行っていません。今後、広告の効果測定などに利用する場合は、本ページを更新してお知らせします。また、表示言語（日本語／English）の選択は、再訪問時に同じ言語で表示するため、お使いのブラウザのlocalStorageに保存します。",
+        note: "予約フォームへの入力開始と予約申込の受付を示すイベントに独自に付与する項目は、選択したプラン（plan_id）と表示言語（lang）のみです。予約・お問い合わせフォームに入力された氏名、メールアドレス、電話番号、Instagram ID、ご相談内容、受付番号は、Google アナリティクスやGoogle 広告へ送信する計測情報には含めません。Cookieや広告クリック識別子を用いた計測情報は、完全に匿名であるとは限りません。また、表示言語（日本語／English）の選択は、再訪問時に同じ言語で表示するため、お使いのブラウザのlocalStorageに保存します。",
+      },
+      {
+        title: "Google によるデータの利用と収集の制限について",
+        body: "Google によるデータの利用については、Google の案内（https://policies.google.com/technologies/partner-sites）をご確認ください。これらの計測による情報の収集は、次の方法で制限できます。",
+        bullets: [
+          "ブラウザの設定でCookieを無効にする、または削除する",
+          "Google アナリティクス オプトアウト アドオン（https://tools.google.com/dlpage/gaoptout）を利用する",
+        ],
+        note: "Google が表示する広告に関する設定は、Google の広告設定（https://adssettings.google.com/）で確認・変更できます。",
       },
       {
         title: "保存期間について",
@@ -68,7 +79,7 @@ const content = {
   en: {
     eyebrow: "PRIVACY POLICY",
     title: "Privacy Policy",
-    lastUpdated: "Last updated: October 25, 2026",
+    lastUpdated: "Last updated: November 9, 2026",
     sections: [
       {
         title: "Information We Collect",
@@ -100,14 +111,25 @@ const content = {
         note: "Please also refer to Google's own privacy policy regarding how these services handle data.",
       },
       {
-        title: "Cookies & Analytics",
-        body: "To understand how this site is used and improve it, we use Google Analytics, an analytics service provided by Google LLC. Google Analytics uses cookies and collects information such as the following, without identifying you by name:",
+        title: "Cookies, Analytics & Ad Measurement",
+        body: "To understand how this site is used and improve it, we use Google Analytics (GA4), an analytics service provided by Google LLC. When we use Google Ads, we also link Google Analytics with Google Ads to measure how well our ads perform. This measurement uses cookies and identifiers added to the URL when an ad is clicked (such as gclid), and collects information such as the following:",
         bullets: [
           "Pages viewed, time of visit, and referrer (which page or site you came from)",
           "Device and browser type, approximate region, and similar technical information",
-          "That you started filling in the booking form, and that your booking request was received (only the selected plan and display language)",
+          "If you arrive by clicking an ad, information about that ad click",
+          "On-site actions such as scrolling, clicking external links, selecting a plan, and clicking consultation links",
+          "That you started filling in the booking form, and that your booking request was received",
         ],
-        note: "We do not send your name, email address, phone number, Instagram ID, message, or receipt number from the booking or inquiry forms to Google Analytics. Collected data is handled under Google's privacy policy (https://policies.google.com/technologies/partner-sites). You can stop collection by disabling cookies in your browser or by using the Google Analytics Opt-out Browser Add-on (https://tools.google.com/dlpage/gaoptout). We do not currently use tracking for ad delivery; if we start using it for purposes such as measuring advertising, this page will be updated. Your selected display language (Japanese / English) is also saved in your browser's localStorage so the site can show the same language on return visits.",
+        note: "The only custom parameters attached to the events for starting the booking form and for a received booking request are the selected plan (plan_id) and display language (lang). Your name, email address, phone number, Instagram ID, message, and receipt number from the booking or inquiry forms are not included in the measurement data sent to Google Analytics or Google Ads. Measurement data that uses cookies or ad click identifiers may not be completely anonymous. Your selected display language (Japanese / English) is also saved in your browser's localStorage so the site can show the same language on return visits.",
+      },
+      {
+        title: "How Google Uses Data and How to Limit Collection",
+        body: "For information on how Google uses data, please see Google's guidance (https://policies.google.com/technologies/partner-sites). You can limit the collection of information through this measurement in the following ways.",
+        bullets: [
+          "Disable or delete cookies in your browser settings",
+          "Use the Google Analytics Opt-out Browser Add-on (https://tools.google.com/dlpage/gaoptout)",
+        ],
+        note: "You can review and change settings for ads shown by Google in Google's Ad Settings (https://adssettings.google.com/).",
       },
       {
         title: "Data Retention",
