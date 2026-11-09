@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import CTASection from "@/components/CTASection"
 import FAQ from "@/components/FAQ"
@@ -12,47 +13,93 @@ import { t } from "@/lib/i18n"
 export default function FirstTimePageContent() {
   const { lang } = useLang()
   const T = t[lang].firstTimePage
+  // キャッチはTOPと同じ文面・対訳を使い、最初の読点・ピリオドの位置で2行に分ける
+  const catchCopy = t[lang].hero.tagline.replace(/([、.])\s*/, "$1\n")
 
   // 料金・時間・予約先は lib/pricing.ts の初回プラン定義を参照する（文言側に金額を持たない）
   const firstTimePlan = getPlanById("first-time-2h")!
-  const offerPrice = T.offerPrice
-    .replace("{hours}", String(firstTimePlan.durationHours))
-    .replace("{price}", firstTimePlan.price.replace("¥", ""))
+  const hours = String(firstTimePlan.durationHours)
+  const offerLabel = T.offerLabel.replace("{hours}", hours)
+  const offerPrice = T.offerPrice.replace("{price}", firstTimePlan.price.replace("¥", ""))
+  const btnAvailability = T.btnAvailability.replace("{hours}", hours)
+
+  // PCの左カラムの内側余白。1024pxで24px、1280px以上で48pxになるよう幅に応じて変化する（写真の列は動かさない）
+  const pcIndent = "lg:pr-0 lg:pl-[clamp(24px,calc(9.375vw_-_72px),48px)]"
+
+  // 料金から下の書体と文字サイズ。和文は数字・欧文も明朝で揃え、サイト共通の数字用サンセリフをここだけ外す。
+  // 英語のCormorantは字面が小さいので、同じ見た目になるよう少し大きくする
+  const isJa = lang === "ja"
+  const offerFont = isJa ? "[font-family:var(--font-noto-serif),var(--font-cormorant),serif]" : "font-sans lining-nums"
+  const offerSmall = isJa ? "text-xs lg:text-[13px]" : "text-sm lg:text-[15px]"
+  const offerBody = isJa ? "text-[13px] lg:text-sm" : "text-[15px] lg:text-base"
 
   return (
     <>
-      {/* Header */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 gradient-bg-soft">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-[#6b9fd4] text-sm font-semibold mb-3 tracking-wide">{T.eyebrow}</p>
-          <h1 className="section-title mb-4">
-            {T.title}<br />
-            <span className="gradient-text">{T.titleHighlight}</span>
-          </h1>
-          <p className="section-subtitle max-w-xl mx-auto">
-            {T.subtitle}
-          </p>
+      {/* ファーストビュー。スマホは「見出し→室内写真→料金・予約」の順。1024px以上は写真だけ右列へ移す */}
+      <section className="bg-white pt-[88px] pb-10 lg:px-8 lg:pt-[164px] lg:pb-16">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 lg:max-w-[1200px] lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-14">
+          <div className={`px-6 lg:col-start-1 lg:row-start-1 ${pcIndent}`}>
+            <p className="text-xs font-medium tracking-[0.23em] text-[#55647a] lg:text-[13px]">
+              VOCAL IS BEAUTIFUL
+            </p>
+            <h1
+              className={`mt-[18px] whitespace-pre-line text-[clamp(1.75rem,8.2vw,2rem)] font-normal leading-[1.67] text-[#1a2340] lg:text-[clamp(2.25rem,3.1vw,2.625rem)] ${isJa ? "tracking-[0.06em]" : "tracking-[0.03em]"}`}
+            >
+              {catchCopy}
+            </h1>
+            <p className={`mt-4 whitespace-pre-line leading-[1.9] text-[#5d6371] ${isJa ? "text-sm lg:text-[15px]" : "text-[15px] tracking-[0.02em] lg:text-base"}`}>
+              {T.heroDescription}
+            </p>
+          </div>
 
-          {/* 初回プランの要点と、申し込み・相談の導線 */}
-          <div className="glass-card rounded-2xl p-6 max-w-xl mx-auto mt-8">
-            <ul className="space-y-1.5 text-left">
-              {[offerPrice, ...T.offerPoints].map((point, i) => (
-                <li
-                  key={point}
-                  className={`flex gap-2 ${i === 0 ? "font-bold text-[#1a1a2e]" : "text-sm text-[#4a5568]"}`}
-                >
-                  <span className="text-[#6b9fd4]">·</span>{point}
-                </li>
+          <div className="mt-5 px-3.5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-center lg:px-0">
+            {/* 比率で表示領域を先に確保し、画像の読み込みでレイアウトがずれないようにする */}
+            <div className="relative aspect-video overflow-hidden rounded-[4px] lg:aspect-[4/3]">
+              <Image
+                src="/images/studio/studio-main.jpg"
+                alt={T.heroImageAlt}
+                fill
+                loading="eager"
+                fetchPriority="high"
+                className="object-cover object-[45%_50%]"
+                sizes="(min-width: 1264px) 572px, (min-width: 1024px) calc(50vw - 60px), (min-width: 672px) 644px, calc(100vw - 28px)"
+              />
+            </div>
+          </div>
+
+          <div className={`mt-[22px] px-6 lg:col-start-1 lg:row-start-2 lg:mt-7 ${pcIndent} ${offerFont}`}>
+            <p className={`leading-[1.7] tracking-[0.08em] text-[#5b6376] ${offerSmall}`}>
+              {offerLabel}
+            </p>
+            <p className="mt-1 whitespace-nowrap text-[#1a2340]">
+              <span className="text-[28px] font-normal leading-[1.4] tracking-[0.02em] lg:text-[32px]">{offerPrice}</span>
+              <span className={`text-[#5b6376] ${offerSmall}`}>{T.offerTax}</span>
+            </p>
+            <div className="mt-2.5">
+              {T.offerPoints.map((point, i) => (
+                <p key={point} className={`leading-[25px] ${i === 0 ? `${offerBody} text-[#363f52]` : `${offerSmall} text-[#646b79]`}`}>
+                  {point}
+                </p>
               ))}
-            </ul>
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              <Link href={firstTimePlan.ctaHref} className="btn-primary text-sm">
-                {T.btnAvailability}
+            </div>
+
+            <div className="mt-[18px] flex flex-col items-center lg:mt-6 lg:items-start">
+              <Link
+                href={firstTimePlan.ctaHref}
+                className={`flex min-h-[50px] w-full items-center justify-center text-balance rounded-full bg-[#1a2340] px-6 py-3 text-center leading-snug tracking-[0.02em] text-white transition-colors hover:bg-[#2c3a60] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1a2340] lg:w-auto lg:px-9 ${isJa ? "text-sm font-normal lg:text-[15px]" : "text-base font-medium"}`}
+              >
+                {btnAvailability}
               </Link>
-              <Link href="/contact" className="btn-secondary text-sm">
+              <Link
+                href="/contact"
+                className={`mt-1 inline-flex min-h-11 items-center text-[#515e75] underline underline-offset-4 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1a2340] ${offerSmall}`}
+              >
                 {T.btnConsultRecording}
               </Link>
             </div>
+            <p className={`mt-1 whitespace-pre-line text-center leading-[1.65] text-[#6a7180] lg:text-left ${isJa ? "text-xs" : "text-[13px]"}`}>
+              {T.applicationNotice}
+            </p>
           </div>
         </div>
       </section>

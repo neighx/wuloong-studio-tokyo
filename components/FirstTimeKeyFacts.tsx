@@ -10,18 +10,46 @@ import { getPlanById } from "@/lib/pricing"
 import { useLang } from "@/contexts/LanguageContext"
 import { t } from "@/lib/i18n"
 
+/** 読点・句点の位置でだけ折り返す（句の途中で改行しない）。英語はこれらの記号を含まないので通常どおり折り返す。 */
+function wrapPhrases(text: string) {
+  return (text.match(/[^、。]+[、。]?”?/g) ?? [text]).map((phrase, i) => (
+    <span key={i} className="inline-block">{phrase}</span>
+  ))
+}
+
 export default function FirstTimeKeyFacts() {
   const { lang } = useLang()
   const T = t[lang].firstTimeFacts
 
-  const firstTimePlan = getPlanById("first-time-2h")!
-  const songPlan = getPlanById("song-package")!
+  // lib/pricing.ts の名称・特徴は日本語のみなので、英語表示では既存の対訳に差し替える
+  const firstBase = getPlanById("first-time-2h")!
+  const songBase = getPlanById("song-package")!
+  const firstTimePlan = lang === "ja" ? firstBase : { ...firstBase, ...t.en.plans["first-time-2h"] }
+  const songPlan = lang === "ja"
+    ? songBase
+    : { ...songBase, ...t.en.plans["song-package"], price: t.en.songPackagePage.price, priceNote: t.en.songPackagePage.priceNote }
 
   return (
     <section className="py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-3xl mx-auto">
         <h2 className="section-title text-center mb-3">{T.title}</h2>
         <p className="section-subtitle text-center mb-10">{T.subtitle}</p>
+
+        {/* 録音と1曲完成パックの使い分けをひとことで示す。文面・対訳はTOPの引用と共通。和文の斜体は字形が崩れるため、日本語は細字の正体にする */}
+        <p
+          className="text-center text-[#1a2340] mb-10"
+          style={{
+            fontSize: "clamp(1rem, 1.8vw, 1.3rem)",
+            fontWeight: lang === "ja" ? 300 : 500,
+            fontStyle: lang === "ja" ? "normal" : "italic",
+            letterSpacing: "0.05em",
+            lineHeight: 2,
+          }}
+        >
+          {`“${t[lang].hero.quote}”`.split("\n").map((line) => (
+            <span key={line} className="block">{wrapPhrases(line)}</span>
+          ))}
+        </p>
 
         {/* 含まれるもの／含まれないもの比較 */}
         <div className="grid sm:grid-cols-2 gap-4 mb-10">

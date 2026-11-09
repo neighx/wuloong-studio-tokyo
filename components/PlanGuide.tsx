@@ -25,11 +25,11 @@ type Answers = {
   next?: "datetime" | "consult"
 }
 
-const GOAL_TO_PLAN: Record<NonNullable<Answers["goal"]>, PlanId> = {
+const GOAL_TO_PLAN = {
   record: "first-time-2h",
   song: "song-package",
   ongoing: "monthly-support",
-}
+} as const satisfies Record<NonNullable<Answers["goal"]>, PlanId>
 
 export default function PlanGuide() {
   const { lang } = useLang()
@@ -55,6 +55,16 @@ export default function PlanGuide() {
   const needsConsultFirst = answers.material === "none"
   const resolvedPlanId = answers.goal ? GOAL_TO_PLAN[answers.goal] : undefined
   const resolvedPlan = resolvedPlanId ? getPlanById(resolvedPlanId) : undefined
+
+  // 金額・時間は lib/pricing.ts の定義を使う。定義の文言は日本語のみなので、英語表示では翻訳に差し替える
+  const result = resolvedPlan && resolvedPlanId && {
+    name: lang === "ja" ? resolvedPlan.name : t.en.plans[resolvedPlanId].name,
+    price: lang === "ja" ? resolvedPlan.price : resolvedPlan.price.replace(/^(¥[\d,]+)〜/, "From $1").replace("30日", "30 days"),
+    priceNote: resolvedPlan.priceNote && (lang === "ja" ? resolvedPlan.priceNote : t.en.planGuide.resultPriceNote),
+    description: lang === "ja" ? resolvedPlan.description : t.en.planGuide.resultDescriptions[resolvedPlanId],
+    terms: T.resultTerms[resolvedPlanId].replace("{hours}", String(resolvedPlan.durationHours)),
+    bookingHref: `/booking?plan=${resolvedPlanId}`,
+  }
 
   const isResult = step >= 3
 
@@ -119,36 +129,38 @@ export default function PlanGuide() {
             </Link>
           </div>
         </div>
-      ) : resolvedPlan ? (
+      ) : result ? (
         <div className="text-center">
           <p className="font-bold text-[#1a1a2e] mb-4">{T.resultPlanTitle}</p>
           <div
             className="rounded-2xl p-6 mb-4 max-w-sm mx-auto text-left"
             style={{ background: "linear-gradient(155deg, #f0f5ff 0%, #f8f0ff 100%)", border: "1px solid rgba(107,159,212,0.15)" }}
           >
-            <p className="font-bold text-[#1a2340] mb-1">{resolvedPlan.name}</p>
+            <p className="font-bold text-[#1a2340] mb-1">{result.name}</p>
             <p className="gradient-text font-black text-xl mb-2">
-              {resolvedPlan.price}
-              {resolvedPlan.priceNote && (
-                <span className="text-xs font-normal text-[#94a3b8] block mt-0.5">{resolvedPlan.priceNote}</span>
+              {result.price}
+              {result.priceNote && (
+                <span className="text-xs font-normal text-[#94a3b8] block mt-0.5">{result.priceNote}</span>
               )}
             </p>
-            <p className="text-sm text-[#64748b] leading-relaxed">{resolvedPlan.description}</p>
+            <p className="text-sm text-[#64748b] leading-relaxed">{result.description}</p>
+            <p className="text-sm text-[#4a5568] leading-relaxed mt-3">{result.terms}</p>
           </div>
-          <p className="text-xs text-[#94a3b8] mb-5">{T.resultPlanNote}</p>
+          <p className="text-xs text-[#94a3b8] mb-1">{T.resultPlanNote}</p>
+          <p className="text-xs text-[#64748b] leading-relaxed whitespace-pre-line mb-5">{t[lang].firstTimePage.applicationNotice}</p>
           <div className="flex flex-wrap justify-center gap-3">
             {answers.next === "consult" ? (
               <>
                 <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" onClick={() => track("consult_click", { location: "plan_guide_result" })} className="btn-primary text-sm">
                   {T.btnConsult}
                 </a>
-                <Link href={resolvedPlan.ctaHref} className="btn-secondary text-sm">
+                <Link href={result.bookingHref} className="btn-secondary text-sm">
                   {T.btnBookPlan}
                 </Link>
               </>
             ) : (
               <>
-                <Link href={resolvedPlan.ctaHref} className="btn-primary text-sm">
+                <Link href={result.bookingHref} className="btn-primary text-sm">
                   {T.btnBookPlan}
                 </Link>
                 <Link href="/pricing" className="btn-secondary text-sm">

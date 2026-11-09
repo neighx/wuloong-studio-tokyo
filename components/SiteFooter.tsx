@@ -12,7 +12,8 @@ export default function SiteFooter() {
 
   return (
     <footer className="bg-[#1a1a2e] text-white/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      {/* スマホは画面下の固定予約バー（lg未満で表示）の分だけ下を空け、最下部のリンクが隠れないようにする */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-[calc(7rem+env(safe-area-inset-bottom))] lg:pb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div>
